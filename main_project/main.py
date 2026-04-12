@@ -22,6 +22,7 @@ TEST_INSTRUCTIONS = {
     )
 }
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -78,11 +79,15 @@ class MainWindow(QMainWindow):
             print(f"Error: No screen found for test '{test_name}'")
             self.stacked_widget.setCurrentWidget(self.test_selection_screen)
 
+
 def main():
     app = QApplication(sys.argv)
+    app.setPalette(app.style().standardPalette())
+    app.setStyleSheet("")
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == '__main__':
     main()

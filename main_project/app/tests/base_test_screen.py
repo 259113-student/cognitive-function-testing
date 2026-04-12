@@ -1,10 +1,11 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton
+    QStackedWidget, QVBoxLayout, QLabel, QPushButton
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, pyqtSignal
 
-class BaseTestScreen(QWidget):
+
+class BaseTestScreen(QStackedWidget):
     """
     A base class for test screens to reduce code duplication.
     It provides a title, a placeholder, and a back button.
@@ -16,7 +17,6 @@ class BaseTestScreen(QWidget):
         self.init_ui(test_name)
 
     def init_ui(self, test_name):
-        self.setStyleSheet("background-color: #f0f0f0;")
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setContentsMargins(50, 50, 50, 50)

@@ -56,7 +56,7 @@ class WelcomeScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setStyleSheet("background-color: #f0f0f0;")
+        # self.setStyleSheet("background-color: #f0f0f0;")
 
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
