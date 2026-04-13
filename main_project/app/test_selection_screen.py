@@ -165,7 +165,7 @@ class TestSelectionScreen(QWidget):
         about_text.setFont(QFont("Arial", 10))
         about_text.setStyleSheet("color: #444;")
         about_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        about_text.setFixedWidth(650)
+        about_text.setFixedWidth(700)
         main_layout.addWidget(about_text, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(main_layout)

@@ -16,9 +16,10 @@ TEST_INSTRUCTIONS = {
         'You will complete 20 trials. Respond as quickly and accurately as possible.'
     ),
     "DMS Test": (
-        'A sample stimulus will be shown briefly, followed by a delay.\n\n'
-        'After the delay, several test stimuli will appear.\n\n'
-        'Your task is to select the stimulus that matches the original sample.'
+    'A sample image will appear briefly (it will be visible for around <b>0.8 seconds</b>).<br><br>'
+    'After it disappears, <b>four images</b> will be shown.<br><br>'
+    'Your task is to select the image that <b>matches the original</b>.<br><br>'
+    'Only one image is correct. Respond as quickly and accurately as possible.'
     )
 }
 
@@ -74,6 +75,7 @@ class MainWindow(QMainWindow):
         elif test_name == "Reaction Time Test":
             self.stacked_widget.setCurrentWidget(self.reaction_time_test_screen)
         elif test_name == "DMS Test":
+            self.dms_test_screen.start_test()
             self.stacked_widget.setCurrentWidget(self.dms_test_screen)
         else:
             print(f"Error: No screen found for test '{test_name}'")
