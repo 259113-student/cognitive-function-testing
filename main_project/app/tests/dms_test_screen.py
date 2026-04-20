@@ -1,6 +1,6 @@
-from main_project.app.tests.dms_test.dms import DMSTaskScreen
-from main_project.app.tests.dms_test.end import EndScreen
-from main_project.app.tests.base_test_screen import BaseTestScreen
+from app.tests.dms_test.dms import DMSTaskScreen
+from app.tests.dms_test.end import EndScreen
+from app.tests.base_test_screen import BaseTestScreen
 
 
 class DmsTestScreen(BaseTestScreen):

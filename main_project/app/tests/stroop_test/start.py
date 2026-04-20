@@ -15,7 +15,8 @@ class StartScreen(QWidget):
         instructions = QLabel(
             "Press the key corresponding to the COLOR of the word.\n"
             "Ignore the text itself.\n\n"
-            "R = Red, G = Green, B = Blue"
+            "R = Red, G = Green, B = Blue\n\n"
+            "Press any key to continue"
         )
         instructions.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

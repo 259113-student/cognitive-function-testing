@@ -4,8 +4,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGridLayo
 from PyQt6.QtGui import QPixmap, QIcon, QFont
 from PyQt6.QtCore import Qt, QTimer, QSize
 
-from main_project.app.tests.dms_test.dms_generator import DMSGenerator
-from main_project.app.tests.dms_test.dms_logic import DMSLogic
+from app.tests.dms_test.dms_generator import DMSGenerator
+from app.tests.dms_test.dms_logic import DMSLogic
 
 
 class DmsImageButton(QPushButton):

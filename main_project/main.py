@@ -71,6 +71,7 @@ class MainWindow(QMainWindow):
 
     def run_test(self, test_name):
         if test_name == "Stroop Test":
+            self.stroop_test_screen.reset()
             self.stacked_widget.setCurrentWidget(self.stroop_test_screen)
         elif test_name == "Reaction Time Test":
             self.stacked_widget.setCurrentWidget(self.reaction_time_test_screen)
