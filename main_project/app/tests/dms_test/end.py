@@ -14,9 +14,10 @@ from PyQt6.QtCore import Qt
 
 
 class EndScreen(QWidget):
-    def __init__(self, on_restart, parent=None):
+    def __init__(self, on_restart, back_callback, parent=None):
         super().__init__(parent)
         self.on_restart = on_restart
+        self.back_callback = back_callback
 
         self.summary_label = None
         self.details_label = None
@@ -136,6 +137,25 @@ class EndScreen(QWidget):
         card_layout.addWidget(self.summary_label)
         card_layout.addWidget(self.details_label)
         card_layout.addWidget(self.table)
+
+        self.back_button = QPushButton("Back to Main Menu")
+        self.back_button.clicked.connect(self.go_back)
+        self.back_button.setMinimumHeight(50)
+        self.back_button.setMinimumWidth(300)
+        self.back_button.setFont(QFont("Arial", 14))
+        self.back_button.setStyleSheet("""
+            QPushButton {
+                background-color: #333;
+                color: white;
+                border-radius: 15px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #555;
+            }
+        """)
+        main_layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
         card_layout.addLayout(button_row)
 
         main_layout.addWidget(title)
@@ -180,3 +200,6 @@ class EndScreen(QWidget):
             self.table.setItem(row, 2, rt_item)
 
         self.table.resizeRowsToContents()
+    
+    def go_back(self):
+        self.back_callback()

@@ -1,17 +1,22 @@
 from app.tests.dms_test.dms import DMSTaskScreen
 from app.tests.dms_test.end import EndScreen
 from app.tests.base_test_screen import BaseTestScreen
+from PyQt6.QtCore import pyqtSignal
 
 
 class DmsTestScreen(BaseTestScreen):
+    backToSelection = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__("DMS Test", parent)
 
         self.task_screen = DMSTaskScreen(self.show_results)
-        self.end_screen = EndScreen(self.restart_test)
+        self.end_screen = EndScreen(self.restart_test, self.go_back)
 
         self.addWidget(self.task_screen)
         self.addWidget(self.end_screen)
+
+        self.setCurrentWidget(self.task_screen)
 
     def start_test(self):
         self.task_screen.reset_task()
@@ -23,3 +28,7 @@ class DmsTestScreen(BaseTestScreen):
     def show_results(self, summary):
         self.end_screen.set_results(summary)
         self.setCurrentWidget(self.end_screen)
+
+    def go_back(self):
+        self.start_test()
+        self.backToSelection.emit()
