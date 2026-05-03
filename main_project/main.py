@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PyQt6.QtCore import Qt
+from app.translations import get_translator
 from app.welcome_screen import WelcomeScreen
 from app.test_selection_screen import TestSelectionScreen
 from app.test_instructions_screen import TestInstructionsScreen
@@ -29,9 +30,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Application for cognitive function testing")
         self.setGeometry(100, 100, 900, 700)
         self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
+
+        # translation manager
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
+        self.setWindowTitle(self._tr.t('app.title'))
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -66,23 +71,30 @@ class MainWindow(QMainWindow):
     def show_test_selection(self):
         self.stacked_widget.setCurrentWidget(self.test_selection_screen)
 
-    def show_test_instructions(self, test_name):
-        instructions = TEST_INSTRUCTIONS.get(test_name, "No instructions available for this test.")
-        self.test_instructions_screen.set_test_info(test_name, instructions)
+    def show_test_instructions(self, test_id):
+        self.test_instructions_screen.set_test_info(test_id)
         self.stacked_widget.setCurrentWidget(self.test_instructions_screen)
 
     def run_test(self, test_name):
-        if test_name == "Stroop Test":
+        if test_name == "stroop":
             self.stroop_test_screen.reset()
             self.stacked_widget.setCurrentWidget(self.stroop_test_screen)
-        elif test_name == "Reaction Time Test":
+        elif test_name == "reaction_time":
             self.stacked_widget.setCurrentWidget(self.reaction_time_test_screen)
-        elif test_name == "DMS Test":
-            self.dms_test_screen.start_test()
+        elif test_name == "dms":
+            sample_time_ms = self.test_instructions_screen.get_dms_sample_time_ms()
+            self.dms_test_screen.start_test(sample_time_ms)
             self.stacked_widget.setCurrentWidget(self.dms_test_screen)
         else:
             print(f"Error: No screen found for test '{test_name}'")
             self.stacked_widget.setCurrentWidget(self.test_selection_screen)
+
+    def retranslate(self, lang):
+        # update dynamic UI elements that belong to MainWindow
+        try:
+            self.setWindowTitle(self._tr.t('app.title'))
+        except Exception:
+            pass
 
 
 def main():

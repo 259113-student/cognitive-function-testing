@@ -1,16 +1,19 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtGui import QFont, QPainter, QColor, QBrush, QPen
 from PyQt6.QtCore import Qt
+from app.translations import get_translator
 
 
 class EndScreen(QWidget):
     def __init__(self, back_callback):
         super().__init__()
         self.back_callback = back_callback
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
 
         self.layout = QVBoxLayout()
 
-        self.title = QLabel("Results")
+        self.title = QLabel(self._tr.t('stroop.results_title'))
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.title.setStyleSheet("font-size: 40px; font-weight: bold;")
 
@@ -21,7 +24,7 @@ class EndScreen(QWidget):
         self.layout.addWidget(self.title)
         self.layout.addWidget(self.results_label)
 
-        self.back_button = QPushButton("Back to Main Menu")
+        self.back_button = QPushButton(self._tr.t('stroop.back_main_menu'))
         self.back_button.clicked.connect(self.go_back)
         self.back_button.setMinimumHeight(50)
         self.back_button.setMinimumWidth(300)
@@ -43,9 +46,18 @@ class EndScreen(QWidget):
 
     def set_results(self, accuracy, avg_crt, avg_icrt):
         self.results_label.setText(
-            f"Accuracy: {accuracy:.1f}%\nAverage consistent RT: {avg_crt:.3f} s\nAverage inconsistent RT: {avg_icrt:.3f} s"
+            f"{self._tr.t('stroop.accuracy_percent').format(percent=accuracy)}\n"
+            f"{self._tr.t('stroop.avg_consistent_rt').format(value=avg_crt)}\n"
+            f"{self._tr.t('stroop.avg_inconsistent_rt').format(value=avg_icrt)}"
         )
 
     def go_back(self):
         self.back_callback()
+
+    def retranslate(self, lang=None):
+        try:
+            self.title.setText(self._tr.t('stroop.results_title'))
+            self.back_button.setText(self._tr.t('stroop.back_main_menu'))
+        except Exception:
+            pass
 

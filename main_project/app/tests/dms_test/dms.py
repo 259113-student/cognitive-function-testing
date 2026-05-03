@@ -1,11 +1,12 @@
 from pathlib import Path
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGridLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGridLayout, QSpinBox, QHBoxLayout
 from PyQt6.QtGui import QPixmap, QIcon, QFont
 from PyQt6.QtCore import Qt, QTimer, QSize
 
 from app.tests.dms_test.dms_generator import DMSGenerator
 from app.tests.dms_test.dms_logic import DMSLogic
+from app.translations import get_translator
 
 
 class DmsImageButton(QPushButton):
@@ -43,6 +44,9 @@ class DMSTaskScreen(QWidget):
         super().__init__(parent)
         self.on_finish = on_finish
         self.dataset_dir = Path("dms_dataset")
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
+        self.sample_time_ms = self.SAMPLE_TIME
 
         self.logic = None
         self.info_label = None
@@ -58,7 +62,7 @@ class DMSTaskScreen(QWidget):
         layout.setContentsMargins(40, 30, 40, 30)
         layout.setSpacing(22)
 
-        self.info_label = QLabel("Remember the pattern.")
+        self.info_label = QLabel(self._tr.t('dms.remember_pattern'))
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_label.setWordWrap(True)
         self.info_label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
@@ -92,6 +96,9 @@ class DMSTaskScreen(QWidget):
         layout.addWidget(self.sample_label, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(answers_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
+    def set_sample_time(self, sample_time_ms):
+        self.sample_time_ms = max(100, int(sample_time_ms))
+
     def prepare_dataset(self):
         generator = DMSGenerator(output_dir=str(self.dataset_dir))
         generator.generate_dataset(10)
@@ -121,7 +128,7 @@ class DMSTaskScreen(QWidget):
     def show_fixation(self):
         self.sample_label.setPixmap(QPixmap())
         self.sample_label.setText("+")
-        self.info_label.setText("Focus on the center")
+        self.info_label.setText(self._tr.t('dms.focus_center'))
         QTimer.singleShot(self.FIXATION_TIME, self.show_sample)
 
     def show_sample(self):
@@ -137,13 +144,13 @@ class DMSTaskScreen(QWidget):
                 Qt.TransformationMode.SmoothTransformation
             )
         )
-        self.info_label.setText("Remember this pattern")
-        QTimer.singleShot(self.SAMPLE_TIME, self.show_choices)
+        self.info_label.setText(self._tr.t('dms.remember_this_pattern'))
+        QTimer.singleShot(self.sample_time_ms, self.show_choices)
 
     def show_choices(self):
         self.sample_label.setPixmap(QPixmap())
         self.sample_label.setText("")
-        self.info_label.setText("Choose the identical pattern")
+        self.info_label.setText(self._tr.t('dms.choose_identical'))
 
         answer_paths = self.logic.get_answer_paths()
 
@@ -159,3 +166,18 @@ class DMSTaskScreen(QWidget):
     def handle_answer(self, answer_path: Path):
         self.logic.submit_answer(answer_path.name)
         QTimer.singleShot(250, self.run_next_trial)
+
+    def retranslate(self, lang=None):
+        try:
+            current = self.info_label.text()
+            if current:
+                if current in ("Remember the pattern.", self._tr.t('dms.remember_pattern')):
+                    self.info_label.setText(self._tr.t('dms.remember_pattern'))
+                elif current in ("Focus on the center", self._tr.t('dms.focus_center')):
+                    self.info_label.setText(self._tr.t('dms.focus_center'))
+                elif current in ("Remember this pattern", self._tr.t('dms.remember_this_pattern')):
+                    self.info_label.setText(self._tr.t('dms.remember_this_pattern'))
+                elif current in ("Choose the identical pattern", self._tr.t('dms.choose_identical')):
+                    self.info_label.setText(self._tr.t('dms.choose_identical'))
+        except Exception:
+            pass

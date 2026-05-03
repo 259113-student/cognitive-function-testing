@@ -1,0 +1,87 @@
+{
+  "app": {
+    "title": "Zestaw testów funkcji poznawczych",
+    "menu": "Język"
+  },
+  "welcome": {
+    "title": "Zestaw testów funkcji poznawczych",
+    "before": "Przed rozpoczęciem",
+    "instructions": "<p>&bull; Znajdź ciche, wygodne miejsce bez rozproszeń</p><p>&bull; Każdy test zawiera jasne instrukcje przed rozpoczęciem</p><p>&bull; Wykonuj test w swoim tempie</p><p>&bull; Wyniki są obliczane natychmiast po wykonaniu testu</p><p>&bull; Możesz robić przerwy między testami w razie potrzeby</p>",
+    "start": "Rozpocznij badanie"
+  },
+  "test_selection": {
+    "title": "Zestaw testów funkcji poznawczych",
+    "subtitle": "Wybierz test, aby rozpocząć ocenę poznawczą",
+    "about_title": "O tych testach",
+    "about_text": "Ten zestaw testów ocenia różne aspekty funkcji poznawczych, w tym uwagę, pamięć, szybkość przetwarzania i funkcje wykonawcze. Każdy test został zaprojektowany, aby mierzyć określone zdolności poznawcze. Wyniki są obliczane natychmiast po ukończeniu każdego testu.",
+    "measures": "Mierzone parametry:"
+  },
+  "tests": {
+    "stroop": {
+      "name": "Test Stroopa",
+      "description": "Określ kolor tekstu, ignorując treść słowa",
+      "measures": "Uwaga i szybkość przetwarzania"
+    },
+    "reaction_time": {
+      "name": "Test czasu reakcji",
+      "description": "Zmierzenie, jak szybko reagujesz na bodziec",
+      "measures": "Szybkość reakcji"
+    },
+    "dms": {
+      "name": "Test DMS",
+      "description": "Zapamiętaj próbkę i rozpoznaj ją po opóźnieniu",
+      "measures": "Pamięć krótkotrwała"
+    }
+  },
+  "instructions": {
+    "stroop": "W tym teście zobaczysz słowa kolorów wyświetlone w różnych kolorach. Twoim zadaniem jest wskazać KOLOR tekstu, a nie samo słowo. Wykonasz 20 prób. Odpowiadaj szybko i dokładnie.",
+    "dms": "Próbka obrazu pojawi się krótko (około 0.8 sekundy). Po zniknięciu pojawi się cztery obrazy. Twoim zadaniem jest wybrać obraz, który odpowiada oryginałowi. Tylko jeden obraz jest poprawny. Odpowiadaj szybko i dokładnie."
+  },
+  "stroop": {
+    "window_title": "Test Stroopa",
+    "start_title": "Test Stroopa",
+    "instructions": "Naciśnij klawisz odpowiadający KOLOROWI słowa. Ignoruj sam tekst. R = {red}, G = {green}, B = {blue}. Naciśnij dowolny klawisz, aby kontynuować.",
+    "start_button": "Start",
+    "red": "CZERWONY",
+    "green": "ZIELONY",
+    "blue": "NIEBIESKI",
+    "results_title": "Wyniki",
+    "back_main_menu": "Powrót do menu głównego",
+    "accuracy_percent": "Dokładność: {percent:.1f}%",
+    "avg_consistent_rt": "Średni czas reakcji zgodnych: {value:.3f} s",
+    "avg_inconsistent_rt": "Średni czas reakcji niezgodnych: {value:.3f} s"
+  },
+  "dms": {
+    "remember_pattern": "Zapamiętaj układ.",
+    "focus_center": "Skup się na środku",
+    "remember_this_pattern": "Zapamiętaj ten układ",
+    "choose_identical": "Wybierz identyczny układ",
+    "setup_title": "Konfiguracja testu DMS",
+    "setup_hint": "Wybierz, jak długo próbka ma być widoczna.",
+    "sample_duration": "Czas próbki (ms)",
+    "start": "Rozpocznij test DMS",
+    "results_title": "Wyniki DMS",
+    "restart": "Uruchom ponownie test DMS",
+    "back_main_menu": "Powrót do menu głównego",
+    "trial": "Próba",
+    "result": "Wynik",
+    "rt": "RT (s)",
+    "accuracy": "Dokładność: {correct}/{total} ({percent:.1f}%)",
+    "average_rt": "Średni RT: {value:.2f} s",
+    "fastest_rt": "Najszybszy: {value:.2f} s",
+    "slowest_rt": "Najwolniejszy: {value:.2f} s",
+    "correct": "Poprawnie",
+    "wrong": "Błędnie"
+  },
+  "common": {
+    "start_test": "Rozpocznij test",
+    "back_to_selection": "Powrót do wyboru testu",
+    "placeholder": "Logika testu zostanie tu zaimplementowana.",
+    "in_progress": "W trakcie"
+  },
+  "language": {
+    "label": "Język",
+    "english": "Angielski",
+    "polish": "Polski"
+  }
+}

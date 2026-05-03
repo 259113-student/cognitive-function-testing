@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, pyqtSignal
+from app.translations import get_translator
 
 
 class BaseTestScreen(QStackedWidget):
@@ -14,6 +15,9 @@ class BaseTestScreen(QStackedWidget):
 
     def __init__(self, test_name, parent=None):
         super().__init__(parent)
+        self._test_id = test_name
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
         self.init_ui(test_name)
 
     def init_ui(self, test_name):
@@ -22,27 +26,31 @@ class BaseTestScreen(QStackedWidget):
         layout.setContentsMargins(50, 50, 50, 50)
         layout.setSpacing(20)
 
-        title = QLabel(test_name + " - In Progress")
+        # try to resolve a display name from translations (tests.<id>.name)
+        display_name = self._tr.t(f'tests.{test_name}.name')
+        if display_name.startswith('tests.'):
+            display_name = test_name
+        self.title_label = QLabel(f"{display_name} - {self._tr.t('common.in_progress')}")
         font = QFont()
         font.setPointSize(24)
         font.setBold(True)
-        title.setFont(font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        self.title_label.setFont(font)
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.title_label)
 
-        placeholder = QLabel("Test logic will be implemented here.")
-        placeholder.setFont(QFont("Arial", 12))
-        placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(placeholder)
+        self.placeholder = QLabel(self._tr.t('common.placeholder'))
+        self.placeholder.setFont(QFont("Arial", 12))
+        self.placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.placeholder)
 
         layout.addStretch()
 
-        back_button = QPushButton("Back to Test Selection")
-        back_button.clicked.connect(self.backToSelection.emit)
-        back_button.setMinimumHeight(50)
-        back_button.setMinimumWidth(300)
-        back_button.setFont(QFont("Arial", 14))
-        back_button.setStyleSheet("""
+        self.back_button = QPushButton(self._tr.t('common.back_to_selection'))
+        self.back_button.clicked.connect(self.backToSelection.emit)
+        self.back_button.setMinimumHeight(50)
+        self.back_button.setMinimumWidth(300)
+        self.back_button.setFont(QFont("Arial", 14))
+        self.back_button.setStyleSheet("""
             QPushButton {
                 background-color: #333;
                 color: white;
@@ -53,4 +61,16 @@ class BaseTestScreen(QStackedWidget):
                 background-color: #555;
             }
         """)
-        layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+    def retranslate(self, lang=None):
+        try:
+            # update placeholder and back button
+            display_name = self._tr.t(f'tests.{self._test_id}.name')
+            if display_name.startswith('tests.'):
+                display_name = self._test_id
+            self.title_label.setText(f"{display_name} - {self._tr.t('common.in_progress')}")
+            self.placeholder.setText(self._tr.t('common.placeholder'))
+            self.back_button.setText(self._tr.t('common.back_to_selection'))
+        except Exception:
+            pass

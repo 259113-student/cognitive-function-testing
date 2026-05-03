@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtCore import Qt
+from app.translations import get_translator
 
 
 class EndScreen(QWidget):
@@ -18,6 +19,8 @@ class EndScreen(QWidget):
         super().__init__(parent)
         self.on_restart = on_restart
         self.back_callback = back_callback
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
 
         self.summary_label = None
         self.details_label = None
@@ -95,9 +98,9 @@ class EndScreen(QWidget):
         main_layout.setContentsMargins(40, 30, 40, 30)
         main_layout.setSpacing(20)
 
-        title = QLabel("DMS Results")
-        title.setObjectName("title")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title = QLabel(self._tr.t('dms.results_title'))
+        self.title.setObjectName("title")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         card = QFrame()
         card.setObjectName("card")
@@ -117,7 +120,11 @@ class EndScreen(QWidget):
 
         self.table = QTableWidget()
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["Trial", "Result", "RT (s)"])
+        self.table.setHorizontalHeaderLabels([
+            self._tr.t('dms.trial'),
+            self._tr.t('dms.result'),
+            self._tr.t('dms.rt'),
+        ])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.verticalHeader().setVisible(False)
         self.table.setAlternatingRowColors(False)
@@ -129,16 +136,16 @@ class EndScreen(QWidget):
         button_row = QHBoxLayout()
         button_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        restart_button = QPushButton("Restart DMS Test")
-        restart_button.clicked.connect(self.on_restart)
+        self.restart_button = QPushButton(self._tr.t('dms.restart'))
+        self.restart_button.clicked.connect(self.on_restart)
 
-        button_row.addWidget(restart_button)
+        button_row.addWidget(self.restart_button)
 
         card_layout.addWidget(self.summary_label)
         card_layout.addWidget(self.details_label)
         card_layout.addWidget(self.table)
 
-        self.back_button = QPushButton("Back to Main Menu")
+        self.back_button = QPushButton(self._tr.t('dms.back_main_menu'))
         self.back_button.clicked.connect(self.go_back)
         self.back_button.setMinimumHeight(50)
         self.back_button.setMinimumWidth(300)
@@ -158,18 +165,22 @@ class EndScreen(QWidget):
 
         card_layout.addLayout(button_row)
 
-        main_layout.addWidget(title)
+        main_layout.addWidget(self.title)
         main_layout.addWidget(card)
 
     def set_results(self, summary):
         self.summary_label.setText(
-            f"Accuracy: {summary['correct_count']}/{summary['total']} ({summary['accuracy']:.1f}%)"
+            self._tr.t('dms.accuracy').format(
+                correct=summary['correct_count'],
+                total=summary['total'],
+                percent=summary['accuracy']
+            )
         )
 
         self.details_label.setText(
-            f"Average RT: {summary['avg_rt']:.2f} s    •    "
-            f"Fastest: {summary['min_rt']:.2f} s    •    "
-            f"Slowest: {summary['max_rt']:.2f} s"
+            f"{self._tr.t('dms.average_rt').format(value=summary['avg_rt'])}    •    "
+            f"{self._tr.t('dms.fastest_rt').format(value=summary['min_rt'])}    •    "
+            f"{self._tr.t('dms.slowest_rt').format(value=summary['max_rt'])}"
         )
 
         results = summary["results"]
@@ -177,7 +188,7 @@ class EndScreen(QWidget):
 
         for row, result in enumerate(results):
             trial_item = QTableWidgetItem(str(result.trial))
-            result_item = QTableWidgetItem("✓ Correct" if result.correct else "✗ Wrong")
+            result_item = QTableWidgetItem(self._tr.t('dms.correct') if result.correct else self._tr.t('dms.wrong'))
             rt_item = QTableWidgetItem(f"{result.rt:.2f}")
 
             trial_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -203,3 +214,16 @@ class EndScreen(QWidget):
     
     def go_back(self):
         self.back_callback()
+
+    def retranslate(self, lang=None):
+        try:
+            self.title.setText(self._tr.t('dms.results_title'))
+            self.table.setHorizontalHeaderLabels([
+                self._tr.t('dms.trial'),
+                self._tr.t('dms.result'),
+                self._tr.t('dms.rt'),
+            ])
+            self.restart_button.setText(self._tr.t('dms.restart'))
+            self.back_button.setText(self._tr.t('dms.back_main_menu'))
+        except Exception:
+            pass

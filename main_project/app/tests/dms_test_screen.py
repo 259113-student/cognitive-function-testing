@@ -8,8 +8,9 @@ class DmsTestScreen(BaseTestScreen):
     backToSelection = pyqtSignal()
 
     def __init__(self, parent=None):
-        super().__init__("DMS Test", parent)
+        super().__init__("dms", parent)
 
+        self.sample_time_ms = 800
         self.task_screen = DMSTaskScreen(self.show_results)
         self.end_screen = EndScreen(self.restart_test, self.go_back)
 
@@ -18,7 +19,11 @@ class DmsTestScreen(BaseTestScreen):
 
         self.setCurrentWidget(self.task_screen)
 
-    def start_test(self):
+    def start_test(self, sample_time_ms=None):
+        if sample_time_ms is not None:
+            self.sample_time_ms = sample_time_ms
+
+        self.task_screen.set_sample_time(self.sample_time_ms)
         self.task_screen.reset_task()
         self.setCurrentWidget(self.task_screen)
 
@@ -30,5 +35,4 @@ class DmsTestScreen(BaseTestScreen):
         self.setCurrentWidget(self.end_screen)
 
     def go_back(self):
-        self.start_test()
         self.backToSelection.emit()

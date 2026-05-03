@@ -4,15 +4,18 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
+from app.translations import get_translator
 
 class TestCard(QFrame):
     """A clickable card widget for displaying a test with an icon."""
     clicked = pyqtSignal(str)
 
-    def __init__(self, test_name, description, measures, icon_path, parent=None):
+    def __init__(self, test_id, display_name, description, measures, icon_path, parent=None):
         super().__init__(parent)
-        self.test_name = test_name
-        self.init_ui(test_name, description, measures, icon_path)
+        self.test_id = test_id
+        self.display_name = display_name
+        self._tr = get_translator()
+        self.init_ui(display_name, description, measures, icon_path)
 
     def init_ui(self, test_name, description, measures, icon_path):
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -57,17 +60,17 @@ class TestCard(QFrame):
         content_layout.setContentsMargins(15, 15, 15, 15)
         content_layout.setSpacing(10)
 
-        name_label = QLabel(test_name)
+        self.name_label = QLabel(test_name)
         name_font = QFont()
         name_font.setPointSize(18)
         name_font.setBold(True)
-        name_label.setFont(name_font)
-        content_layout.addWidget(name_label)
+        self.name_label.setFont(name_font)
+        content_layout.addWidget(self.name_label)
 
-        desc_label = QLabel(description)
-        desc_label.setWordWrap(True)
-        desc_label.setFont(QFont("Arial", 15))
-        content_layout.addWidget(desc_label)
+        self.desc_label = QLabel(description)
+        self.desc_label.setWordWrap(True)
+        self.desc_label.setFont(QFont("Arial", 15))
+        content_layout.addWidget(self.desc_label)
         
         layout.addLayout(content_layout)
         
@@ -86,19 +89,28 @@ class TestCard(QFrame):
         measures_layout.setContentsMargins(15, 5, 15, 0)
         measures_layout.setSpacing(2)
 
-        measures_title_label = QLabel("Measures:")
-        measures_title_label.setFont(QFont("Arial", 13, QFont.Weight.Bold))
-        measures_layout.addWidget(measures_title_label)
+        self.measures_title_label = QLabel(self._tr.t('test_selection.measures'))
+        self.measures_title_label.setFont(QFont("Arial", 13, QFont.Weight.Bold))
+        measures_layout.addWidget(self.measures_title_label)
 
-        measures_label = QLabel(measures)
-        measures_label.setFont(QFont("Arial", 12))
-        measures_label.setStyleSheet("color: #555;")
-        measures_layout.addWidget(measures_label)
+        self.measures_label = QLabel(measures)
+        self.measures_label.setFont(QFont("Arial", 12))
+        self.measures_label.setStyleSheet("color: #555;")
+        measures_layout.addWidget(self.measures_label)
         
         layout.addLayout(measures_layout)
 
+    def retranslate(self):
+        try:
+            self.name_label.setText(self._tr.t(f'tests.{self.test_id}.name'))
+            self.desc_label.setText(self._tr.t(f'tests.{self.test_id}.description'))
+            self.measures_title_label.setText(self._tr.t('test_selection.measures'))
+            self.measures_label.setText(self._tr.t(f'tests.{self.test_id}.measures'))
+        except Exception:
+            pass
+
     def mousePressEvent(self, event):
-        self.clicked.emit(self.test_name)
+        self.clicked.emit(self.test_id)
         super().mousePressEvent(event)
 
 
@@ -107,6 +119,8 @@ class TestSelectionScreen(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
         self.init_ui()
 
     def init_ui(self):
@@ -115,60 +129,71 @@ class TestSelectionScreen(QWidget):
         main_layout.setContentsMargins(50, 30, 50, 50)
         main_layout.setSpacing(20)
 
-        title = QLabel("Cognitive Function Assessment")
+        self.title_label = QLabel(self._tr.t('test_selection.title'))
         title_font = QFont()
         title_font.setPointSize(24)
         title_font.setBold(True)
-        title.setFont(title_font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(title)
+        self.title_label.setFont(title_font)
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.title_label)
 
-        subtitle = QLabel("Select a test to begin cognitive evaluation")
-        subtitle.setFont(QFont("Arial", 12))
-        subtitle.setStyleSheet("color: #666;")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(subtitle)
+        self.subtitle_label = QLabel(self._tr.t('test_selection.subtitle'))
+        self.subtitle_label.setFont(QFont("Arial", 12))
+        self.subtitle_label.setStyleSheet("color: #666;")
+        self.subtitle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.subtitle_label)
         
         main_layout.addSpacing(20)
 
         cards_layout = QHBoxLayout()
         cards_layout.setSpacing(30)
+        self.cards = []
         
         tests = [
-            ("Stroop Test", "Identify the color of text while ignoring the word itself", "Attention & Processing Speed", "app/assets/brain-icon.png"),
-            ("DMS Test", "Remember a sample stimulus and identify it after a delay", "Short-term Memory", "app/assets/pending-icon.png")
+            ("stroop", "app/assets/brain-icon.png"),
+            ("dms", "app/assets/pending-icon.png"),
         ]
 
-        for name, desc, measures, icon in tests:
-            card = TestCard(name, desc, measures, icon)
+        for test_id, icon in tests:
+            name = self._tr.t(f'tests.{test_id}.name')
+            desc = self._tr.t(f'tests.{test_id}.description')
+            measures = self._tr.t(f'tests.{test_id}.measures')
+            card = TestCard(test_id, name, desc, measures, icon)
             card.clicked.connect(self.testSelected.emit)
             cards_layout.addWidget(card)
+            self.cards.append(card)
             
         main_layout.addLayout(cards_layout)
         main_layout.addStretch()
 
-        about_title = QLabel("About these tests")
+        self.about_title_label = QLabel(self._tr.t('test_selection.about_title'))
         about_title_font = QFont()
         about_title_font.setPointSize(16)
         about_title_font.setBold(True)
-        about_title.setFont(about_title_font)
-        about_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(about_title)
+        self.about_title_label.setFont(about_title_font)
+        self.about_title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.about_title_label)
 
-        about_text = QLabel(
-            "This assessment suite evaluates various aspects of cognitive function including attention, "
-            "memory, processing speed, and executive function. Each test is designed to measure specific "
-            "cognitive abilities through standardized tasks. Results are calculated immediately upon "
-            "completion of each test."
-        )
-        about_text.setWordWrap(True)
-        about_text.setFont(QFont("Arial", 10))
-        about_text.setStyleSheet("color: #444;")
-        about_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        about_text.setFixedWidth(700)
-        main_layout.addWidget(about_text, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.about_text_label = QLabel(self._tr.t('test_selection.about_text'))
+        self.about_text_label.setWordWrap(True)
+        self.about_text_label.setFont(QFont("Arial", 10))
+        self.about_text_label.setStyleSheet("color: #444;")
+        self.about_text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.about_text_label.setFixedWidth(700)
+        main_layout.addWidget(self.about_text_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(main_layout)
+
+    def retranslate(self, lang=None):
+        try:
+            self.title_label.setText(self._tr.t('test_selection.title'))
+            self.subtitle_label.setText(self._tr.t('test_selection.subtitle'))
+            self.about_title_label.setText(self._tr.t('test_selection.about_title'))
+            self.about_text_label.setText(self._tr.t('test_selection.about_text'))
+            for card in self.cards:
+                card.retranslate()
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

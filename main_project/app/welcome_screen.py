@@ -1,9 +1,10 @@
 import sys
 from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QPushButton
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox
 )
 from PyQt6.QtGui import QFont, QPainter, QColor, QBrush, QPen
 from PyQt6.QtCore import Qt, pyqtSignal, QPointF
+from app.translations import get_translator
 
 class SmileyWidget(QWidget):
     def __init__(self, parent=None):
@@ -53,6 +54,8 @@ class WelcomeScreen(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
         self.init_ui()
 
     def init_ui(self):
@@ -62,14 +65,30 @@ class WelcomeScreen(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(25)
 
+        language_row = QHBoxLayout()
+        language_row.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        self.language_label = QLabel(self._tr.t('language.label'))
+        self.language_combo = QComboBox()
+        self.language_combo.addItem(self._tr.t('language.polish'), 'pl')
+        self.language_combo.addItem(self._tr.t('language.english'), 'en')
+        current_lang = self._tr.language()
+        current_index = 0 if current_lang == 'pl' else 1
+        self.language_combo.setCurrentIndex(current_index)
+        self.language_combo.currentIndexChanged.connect(self.on_language_changed)
+
+        language_row.addWidget(self.language_label)
+        language_row.addWidget(self.language_combo)
+        layout.addLayout(language_row)
+
         # Title
-        title = QLabel("Cognitive Function Assessment Suite")
+        self.title = QLabel(self._tr.t('welcome.title'))
         font = QFont()
         font.setPointSize(26)
         font.setBold(True)
-        title.setFont(font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        self.title.setFont(font)
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.title)
 
         # Smiley Face
         smiley = SmileyWidget()
@@ -79,22 +98,15 @@ class WelcomeScreen(QWidget):
         layout.addSpacing(20)
 
         # "Before You Begin" Section
-        before_you_begin_title = QLabel("Before You Begin")
+        self.before_title = QLabel(self._tr.t('welcome.before'))
         font_byb = QFont()
         font_byb.setPointSize(18)
         font_byb.setBold(True)
-        before_you_begin_title.setFont(font_byb)
-        before_you_begin_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(before_you_begin_title)
+        self.before_title.setFont(font_byb)
+        self.before_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.before_title)
 
-        instructions_text = """
-        <p>&bull; Find a quiet, comfortable space free from distractions</p>
-        <p>&bull; Each test includes clear instructions before starting</p>
-        <p>&bull; Complete each test at your own pace</p>
-        <p>&bull; Results are calculated immediately after each assessment</p>
-        <p>&bull; You may take breaks between tests as needed</p>
-        """
-        instructions = QLabel(instructions_text)
+        self.instructions = QLabel(self._tr.t('welcome.instructions'))
         # instructions.setStyleSheet("""
         #     QFrame {
         #         background-color: #ffffff;
@@ -102,20 +114,20 @@ class WelcomeScreen(QWidget):
         #         padding: 25px;
         #     }
         # """)
-        instructions.setFont(QFont("Arial", 12))
-        instructions.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        instructions.setWordWrap(True)
-        instructions.setFixedWidth(450)
-        layout.addWidget(instructions, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.instructions.setFont(QFont("Arial", 12))
+        self.instructions.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.instructions.setWordWrap(True)
+        self.instructions.setFixedWidth(450)
+        layout.addWidget(self.instructions, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addSpacing(20)
 
         # Start Button
-        start_button = QPushButton("Begin Assessment")
-        start_button.clicked.connect(self.startAssessment.emit)
-        start_button.setMinimumHeight(50)
-        start_button.setMinimumWidth(300)
-        start_button.setFont(QFont("Arial", 14))
-        start_button.setStyleSheet("""
+        self.start_button = QPushButton(self._tr.t('welcome.start'))
+        self.start_button.clicked.connect(self.startAssessment.emit)
+        self.start_button.setMinimumHeight(50)
+        self.start_button.setMinimumWidth(300)
+        self.start_button.setFont(QFont("Arial", 14))
+        self.start_button.setStyleSheet("""
             QPushButton {
                 background-color: #333;
                 color: white;
@@ -126,9 +138,32 @@ class WelcomeScreen(QWidget):
                 background-color: #555;
             }
         """)
-        layout.addWidget(start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(layout)
+
+    def retranslate(self, lang=None):
+        try:
+            self.title.setText(self._tr.t('welcome.title'))
+            self.language_label.setText(self._tr.t('language.label'))
+            self.language_combo.blockSignals(True)
+            self.language_combo.setItemText(0, self._tr.t('language.polish'))
+            self.language_combo.setItemText(1, self._tr.t('language.english'))
+            self.language_combo.setCurrentIndex(0 if self._tr.language() == 'pl' else 1)
+            self.language_combo.blockSignals(False)
+            self.before_title.setText(self._tr.t('welcome.before'))
+            self.instructions.setText(self._tr.t('welcome.instructions'))
+            self.start_button.setText(self._tr.t('welcome.start'))
+        except Exception:
+            pass
+
+    def on_language_changed(self, index):
+        try:
+            lang = self.language_combo.itemData(index)
+            if lang:
+                self._tr.set_language(lang)
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

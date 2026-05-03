@@ -1,0 +1,87 @@
+{
+  "app": {
+    "title": "Cognitive Function Assessment Suite",
+    "menu": "Language"
+  },
+  "welcome": {
+    "title": "Cognitive Function Assessment Suite",
+    "before": "Before You Begin",
+    "instructions": "<p>&bull; Find a quiet, comfortable space free from distractions</p><p>&bull; Each test includes clear instructions before starting</p><p>&bull; Complete each test at your own pace</p><p>&bull; Results are calculated immediately after each assessment</p><p>&bull; You may take breaks between tests as needed</p>",
+    "start": "Begin Assessment"
+  },
+  "test_selection": {
+    "title": "Cognitive Function Assessment",
+    "subtitle": "Select a test to begin cognitive evaluation",
+    "about_title": "About these tests",
+    "about_text": "This assessment suite evaluates various aspects of cognitive function including attention, memory, processing speed, and executive function. Each test is designed to measure specific cognitive abilities through standardized tasks. Results are calculated immediately upon completion of each test.",
+    "measures": "Measures:"
+  },
+  "tests": {
+    "stroop": {
+      "name": "Stroop Test",
+      "description": "Identify the color of text while ignoring the word itself",
+      "measures": "Attention & Processing Speed"
+    },
+    "reaction_time": {
+      "name": "Reaction Time Test",
+      "description": "Measure how quickly you respond to a stimulus",
+      "measures": "Reaction Speed"
+    },
+    "dms": {
+      "name": "DMS Test",
+      "description": "Remember a sample stimulus and identify it after a delay",
+      "measures": "Short-term Memory"
+    }
+  },
+  "instructions": {
+    "stroop": "In this test, you will see color words displayed in different colors. Your task is to identify the COLOR of the text, not the word itself. You will complete 20 trials. Respond as quickly and accurately as possible.",
+    "dms": "A sample image will appear briefly (it will be visible for around 0.8 seconds). After it disappears, four images will be shown. Your task is to select the image that matches the original. Only one image is correct. Respond as quickly and accurately as possible."
+  },
+  "stroop": {
+    "window_title": "Stroop Test",
+    "start_title": "Stroop Test",
+    "instructions": "Press the key corresponding to the COLOR of the word. Ignore the text itself. R = {red}, G = {green}, B = {blue}. Press any key to continue.",
+    "start_button": "Start",
+    "red": "RED",
+    "green": "GREEN",
+    "blue": "BLUE",
+    "results_title": "Results",
+    "back_main_menu": "Back to Main Menu",
+    "accuracy_percent": "Accuracy: {percent:.1f}%",
+    "avg_consistent_rt": "Average consistent RT: {value:.3f} s",
+    "avg_inconsistent_rt": "Average inconsistent RT: {value:.3f} s"
+  },
+  "dms": {
+    "remember_pattern": "Remember the pattern.",
+    "focus_center": "Focus on the center",
+    "remember_this_pattern": "Remember this pattern",
+    "choose_identical": "Choose the identical pattern",
+    "setup_title": "DMS Test Setup",
+    "setup_hint": "Choose how long the sample image should stay visible.",
+    "sample_duration": "Sample image time (ms)",
+    "start": "Start DMS Test",
+    "results_title": "DMS Results",
+    "restart": "Restart DMS Test",
+    "back_main_menu": "Back to Main Menu",
+    "trial": "Trial",
+    "result": "Result",
+    "rt": "RT (s)",
+    "accuracy": "Accuracy: {correct}/{total} ({percent:.1f}%)",
+    "average_rt": "Average RT: {value:.2f} s",
+    "fastest_rt": "Fastest: {value:.2f} s",
+    "slowest_rt": "Slowest: {value:.2f} s",
+    "correct": "Correct",
+    "wrong": "Wrong"
+  },
+  "common": {
+    "start_test": "Start Test",
+    "back_to_selection": "Back to Test Selection",
+    "placeholder": "Test logic will be implemented here.",
+    "in_progress": "In Progress"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "polish": "Polish"
+  }
+}

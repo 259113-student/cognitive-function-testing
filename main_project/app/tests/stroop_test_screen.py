@@ -8,7 +8,7 @@ class StroopTestScreen(BaseTestScreen):
     backToSelection = pyqtSignal()
 
     def __init__(self, parent=None):
-        super().__init__("Stroop Test", parent)
+        super().__init__("stroop", parent)
 
         self.start_screen = StartScreen(self.start_test)
         self.stroop_screen = StroopScreen(self.show_results)

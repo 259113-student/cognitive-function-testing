@@ -2,14 +2,16 @@ import random
 import time
 from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
+from app.translations import get_translator
 
 colors = {'red': 'r', 'green': 'g', 'blue': 'b'}
-words = {'RED': 'r', 'GREEN': 'g', 'BLUE': 'b'}
 
 
 class StroopScreen(QWidget):
     def __init__(self, finish_callback):
         super().__init__()
+        self._tr = get_translator()
+        self._tr.languageChanged.connect(self.retranslate)
 
         self.word = None
         self.color = None
@@ -18,8 +20,13 @@ class StroopScreen(QWidget):
 
         self.consistent_rt_sum = 0
         self.inconsistent_rt_sum = 0
+        self._word_map = {
+            'red': self._tr.t('stroop.red'),
+            'green': self._tr.t('stroop.green'),
+            'blue': self._tr.t('stroop.blue'),
+        }
 
-        self.setWindowTitle("Stroop Test")
+        self.setWindowTitle(self._tr.t('stroop.window_title'))
         self.setGeometry(100, 100, 800, 600)
 
         self.label = QLabel("", self)
@@ -48,11 +55,11 @@ class StroopScreen(QWidget):
             self.finish_callback(accuracy, avg_crt, avg_icrt)
             return
 
-        self.word = random.choice(list(words.keys()))
+        self.word = random.choice(list(self._word_map.keys()))
         self.color = random.choice(list(colors.keys()))
-        self.consistent = words[self.word] == colors[self.color]
+        self.consistent = self.word == self.color
 
-        self.label.setText(self.word)
+        self.label.setText(self._word_map[self.word])
         self.label.setStyleSheet(f"color: {self.color}; font-size: 48px;")
 
         self.start_time = time.perf_counter()
@@ -87,3 +94,16 @@ class StroopScreen(QWidget):
         avg_inconsistent_rt = self.inconsistent_rt_sum / total if total > 0 else 0
 
         return accuracy, avg_consistent_rt, avg_inconsistent_rt
+
+    def retranslate(self, lang=None):
+        try:
+            self.setWindowTitle(self._tr.t('stroop.window_title'))
+            self._word_map = {
+                'red': self._tr.t('stroop.red'),
+                'green': self._tr.t('stroop.green'),
+                'blue': self._tr.t('stroop.blue'),
+            }
+            if self.word in self._word_map:
+                self.label.setText(self._word_map[self.word])
+        except Exception:
+            pass
