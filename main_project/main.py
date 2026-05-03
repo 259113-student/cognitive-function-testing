@@ -1,5 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from PyQt6.QtCore import Qt
 from app.welcome_screen import WelcomeScreen
 from app.test_selection_screen import TestSelectionScreen
 from app.test_instructions_screen import TestInstructionsScreen
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Application for cognitive function testing")
         self.setGeometry(100, 100, 900, 700)
+        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -87,8 +89,53 @@ def main():
     app = QApplication(sys.argv)
     app.setPalette(app.style().standardPalette())
     app.setStyleSheet("")
+    # Collect primary screen information (geometry, available area, DPI)
+    screen = app.primaryScreen()
+    if screen:
+        geometry = screen.geometry()
+        available = screen.availableGeometry()
+        dpi = screen.logicalDotsPerInch()
+    else:
+        geometry = None
+        available = None
+        dpi = None
+
     window = MainWindow()
-    window.show()
+
+    # Compute margins as a percentage of the smaller display dimension
+    if available:
+        base = min(available.width(), available.height())
+        margin = max(10, int(base * 0.03))  # at least 10 px
+
+        # Apply margins to top-level layouts of known screens when possible
+        screens = [
+            window.welcome_screen,
+            window.test_selection_screen,
+            window.test_instructions_screen,
+            window.stroop_test_screen,
+            window.reaction_time_test_screen,
+            window.dms_test_screen,
+        ]
+
+        for w in screens:
+            try:
+                layout = w.layout()
+                if layout is not None:
+                    layout.setContentsMargins(margin, margin, margin, margin)
+            except Exception:
+                # ignore widgets that don't expose a layout
+                pass
+
+    # Store screen info on the window for later use/inspection
+    window.screen_info = {
+        'geometry': (geometry.width(), geometry.height()) if geometry else None,
+        'available': (available.width(), available.height()) if available else None,
+        'dpi': dpi,
+    }
+
+    # Show application maximized (keeps window decorations: title bar, minimize/close)
+    window.showMaximized()
+    print('Screen info:', window.screen_info)
     sys.exit(app.exec())
 
 
