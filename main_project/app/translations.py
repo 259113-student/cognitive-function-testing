@@ -1,6 +1,7 @@
 import json
 import os
 from PyQt6.QtCore import QObject, pyqtSignal
+from app.helper import resource_path
 
 
 class TranslationManager(QObject):
@@ -9,8 +10,7 @@ class TranslationManager(QObject):
     def __init__(self, translations_dir=None):
         super().__init__()
         if translations_dir is None:
-            base = os.path.dirname(__file__)
-            translations_dir = os.path.join(base, 'translations')
+            translations_dir = resource_path("translations")
         self.translations_dir = translations_dir
         self._data = {}
         self._lang = 'en'

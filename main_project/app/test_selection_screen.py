@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 from app.translations import get_translator
+from app.helper import resource_path
 
 class TestCard(QFrame):
     """A clickable card widget for displaying a test with an icon."""
@@ -147,8 +148,8 @@ class TestSelectionScreen(QWidget):
         self.cards = []
         
         tests = [
-            ("stroop", "app/assets/brain-icon.png"),
-            ("dms", "app/assets/pending-icon.png"),
+            ("stroop", resource_path("assets/brain-icon.png")),
+            ("dms", resource_path("assets/pending-icon.png")),
         ]
 
         for test_id, icon in tests:

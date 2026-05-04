@@ -76,4 +76,9 @@ Once the setup is complete, you can run the application with the following comma
 python main.py
 ```
 
+## Gnerating .exe
+```bash
+pyinstaller --noconfirm --windowed --onefile --add-data "app/assets;assets" --add-data "app/translations;translations" main.py
+```
+
 This will launch the main window of the Cognitive Function Assessment Suite.

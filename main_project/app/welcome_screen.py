@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QPainter, QColor, QBrush, QPen
 from PyQt6.QtCore import Qt, pyqtSignal, QPointF
 from app.translations import get_translator
+from app.helper import resource_path
 from app.sun_widget import SunWidget
 
 class SmileyWidget(QWidget):
@@ -106,7 +107,7 @@ class WelcomeScreen(QWidget):
         layout.addWidget(self.title)
 
         # Smiley Face
-        sun = SunWidget("app/assets/sun2.png")  # <-- your PNG path
+        sun = SunWidget(resource_path("assets/sun2.png"))
         layout.addWidget(sun, alignment=Qt.AlignmentFlag.AlignCenter)
         # smiley = SmileyWidget()
         # layout.addWidget(smiley, alignment=Qt.AlignmentFlag.AlignCenter)
