@@ -61,6 +61,7 @@ class BaseTestScreen(QStackedWidget):
                 background-color: #555;
             }
         """)
+        self.back_button.setCursor(Qt.CursorShape.PointingHandCursor)
         layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def retranslate(self, lang=None):

@@ -44,12 +44,35 @@ class TestInstructionsScreen(QWidget):
         self.dms_settings_layout.setSpacing(12)
 
         self.dms_sample_label = QLabel(self._tr.t('dms.sample_duration'))
+        font = self.dms_sample_label.font()
+        font.setPointSize(14)
+        font.setBold(True)
+        self.dms_sample_label.setFont(font)
+
+        self.dms_sample_label.setMinimumHeight(35)
+
         self.dms_sample_spinbox = QSpinBox()
         self.dms_sample_spinbox.setRange(100, 5000)
         self.dms_sample_spinbox.setSingleStep(50)
         self.dms_sample_spinbox.setValue(self._dms_sample_time_ms)
         self.dms_sample_spinbox.setSuffix(" ms")
         self.dms_sample_spinbox.valueChanged.connect(self._on_dms_sample_time_changed)
+        font = self.dms_sample_spinbox.font()
+        font.setPointSize(14)
+        self.dms_sample_spinbox.setFont(font)
+        self.dms_sample_spinbox.setMinimumHeight(35)
+        self.dms_sample_spinbox.setStyleSheet("""
+            QSpinBox {
+                background-color: white;
+                border: 1px solid #b0b0b0;
+                border-radius: 4px;
+                padding-right: 20px;
+            }
+
+            QSpinBox::up-button, QSpinBox::down-button {
+                width: 18px;
+            }
+        """)
 
         self.dms_settings_layout.addWidget(self.dms_sample_label)
         self.dms_settings_layout.addWidget(self.dms_sample_spinbox)
@@ -73,6 +96,7 @@ class TestInstructionsScreen(QWidget):
                 background-color: #555;
             }
         """)
+        self.start_button.setCursor(Qt.CursorShape.PointingHandCursor)
         layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(layout)

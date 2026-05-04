@@ -88,7 +88,7 @@ class DMSTaskScreen(QWidget):
         """)
 
         answers_widget = QWidget()
-        self.answers_layout = QGridLayout(answers_widget)
+        self.answers_layout = QHBoxLayout(answers_widget)
         self.answers_layout.setSpacing(24)
         self.answers_layout.setContentsMargins(0, 10, 0, 0)
 
@@ -159,7 +159,7 @@ class DMSTaskScreen(QWidget):
                 answer_path,
                 callback=lambda checked=False, p=answer_path: self.handle_answer(p)
             )
-            self.answers_layout.addWidget(button, i // 2, i % 2)
+            self.answers_layout.addWidget(button)
 
         self.logic.start_response_timer()
 

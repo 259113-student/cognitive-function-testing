@@ -19,22 +19,20 @@ class TestCard(QFrame):
 
     def init_ui(self, test_name, description, measures, icon_path):
         self.setFrameShape(QFrame.Shape.StyledPanel)
-        # Use setFixedSize to ensure all cards are identical in size
-        self.setFixedSize(320, 350)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         
         self.setStyleSheet("""
-            TestCard {
-                background-color: white;
-                border: 1px solid #e0e0e0;
-                border-radius: 15px;
-            }
-            TestCard:hover {
-                background-color: #f8f8f8;
-                border: 1px solid #d0d0d0;
-            }
-        """)
+        TestCard {
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 15px;
+        }
 
+        TestCard:hover {
+            background-color: #e6f7ff;
+            border: 1px solid #e6f7ff;
+        }
+        """)
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -43,7 +41,7 @@ class TestCard(QFrame):
         # --- Icon Section ---
         icon_container = QWidget()
         icon_container.setMinimumHeight(100)
-        icon_container.setStyleSheet("background-color: #f8f8f8; border-top-left-radius: 15px; border-top-right-radius: 15px;")
+        icon_container.setStyleSheet("background-color:	#cceeff; border-top-left-radius: 15px; border-top-right-radius: 15px;")
         icon_layout = QVBoxLayout(icon_container)
         icon_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
@@ -139,7 +137,6 @@ class TestSelectionScreen(QWidget):
 
         self.subtitle_label = QLabel(self._tr.t('test_selection.subtitle'))
         self.subtitle_label.setFont(QFont("Arial", 12))
-        self.subtitle_label.setStyleSheet("color: #666;")
         self.subtitle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.subtitle_label)
         
@@ -168,9 +165,10 @@ class TestSelectionScreen(QWidget):
 
         self.about_title_label = QLabel(self._tr.t('test_selection.about_title'))
         about_title_font = QFont()
-        about_title_font.setPointSize(16)
+        about_title_font.setPointSize(20)
         about_title_font.setBold(True)
         self.about_title_label.setFont(about_title_font)
+        # self.about_title_label.setStyleSheet("color: #4da6ff;")
         self.about_title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.about_title_label)
 
@@ -179,8 +177,9 @@ class TestSelectionScreen(QWidget):
         self.about_text_label.setFont(QFont("Arial", 10))
         self.about_text_label.setStyleSheet("color: #444;")
         self.about_text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.about_text_label.setFixedWidth(700)
+        self.about_text_label.setFixedWidth(900)
         main_layout.addWidget(self.about_text_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        main_layout.addSpacing(30)
 
         self.setLayout(main_layout)
 

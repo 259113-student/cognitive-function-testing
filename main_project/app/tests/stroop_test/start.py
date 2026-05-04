@@ -20,10 +20,14 @@ class StartScreen(QWidget):
         self.title.setStyleSheet("font-size: 40px;")
 
         self.instructions = QLabel(self._format_instructions())
+        font = self.instructions.font()
+        font.setPointSize(14)
+        self.instructions.setFont(font)
         self.instructions.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.instructions.setWordWrap(True)
 
         self.start_button = QPushButton(self._tr.t('stroop.start_button'))
+        self.start_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.start_button.clicked.connect(self._switch_callback)
 
         self.layout.addWidget(self.title)

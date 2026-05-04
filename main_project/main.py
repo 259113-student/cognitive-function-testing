@@ -29,9 +29,10 @@ TEST_INSTRUCTIONS = {
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setObjectName("welcomeScreen")
 
         self.setGeometry(100, 100, 900, 700)
-        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, True)
 
         # translation manager
         self._tr = get_translator()
@@ -100,7 +101,15 @@ class MainWindow(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     app.setPalette(app.style().standardPalette())
-    app.setStyleSheet("")
+    app.setStyleSheet("""
+    #welcomeScreen {
+        background: qlineargradient(
+            x1:0, y1:0, x2:1, y2:1,
+            stop:0 #fffbf0,
+            stop:1 #fef9e7
+        );
+    }
+    """)
     # Collect primary screen information (geometry, available area, DPI)
     screen = app.primaryScreen()
     if screen:

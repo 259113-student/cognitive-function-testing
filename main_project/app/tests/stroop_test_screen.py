@@ -12,7 +12,7 @@ class StroopTestScreen(BaseTestScreen):
 
         self.start_screen = StartScreen(self.start_test)
         self.stroop_screen = StroopScreen(self.show_results)
-        self.end_screen = EndScreen(self.go_back)
+        self.end_screen = EndScreen(self.go_back, self.restart_test)
 
         self.addWidget(self.start_screen)
         self.addWidget(self.stroop_screen)
@@ -32,6 +32,10 @@ class StroopTestScreen(BaseTestScreen):
     def show_results(self, accuracy, avg_crt, avg_icrt):
         self.end_screen.set_results(accuracy, avg_crt, avg_icrt)
         self.setCurrentWidget(self.end_screen)
+
+    def restart_test(self):
+        self.reset()
+        self.start_test()
 
     def go_back(self):
         self.reset()

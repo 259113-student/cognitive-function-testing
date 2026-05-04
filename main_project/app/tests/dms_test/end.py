@@ -83,8 +83,8 @@ class EndScreen(QWidget):
                 color: white;
                 border-radius: 14px;
                 padding: 12px 18px;
-                min-width: 220px;
-                min-height: 46px;
+                min-width: 150px;
+                min-height: 25px;
                 font-size: 14px;
                 font-weight: 600;
             }
@@ -138,6 +138,8 @@ class EndScreen(QWidget):
 
         self.restart_button = QPushButton(self._tr.t('dms.restart'))
         self.restart_button.clicked.connect(self.on_restart)
+        self.restart_button.setFont(QFont("Arial", 14))
+        self.restart_button.setCursor(Qt.CursorShape.PointingHandCursor)
 
         button_row.addWidget(self.restart_button)
 
@@ -147,21 +149,9 @@ class EndScreen(QWidget):
 
         self.back_button = QPushButton(self._tr.t('dms.back_main_menu'))
         self.back_button.clicked.connect(self.go_back)
-        self.back_button.setMinimumHeight(50)
-        self.back_button.setMinimumWidth(300)
         self.back_button.setFont(QFont("Arial", 14))
-        self.back_button.setStyleSheet("""
-            QPushButton {
-                background-color: #333;
-                color: white;
-                border-radius: 15px;
-                padding: 10px;
-            }
-            QPushButton:hover {
-                background-color: #555;
-            }
-        """)
-        main_layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.back_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        button_row.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         card_layout.addLayout(button_row)
 

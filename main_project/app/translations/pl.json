@@ -40,16 +40,20 @@
   "stroop": {
     "window_title": "Test Stroopa",
     "start_title": "Test Stroopa",
-    "instructions": "Naciśnij klawisz odpowiadający KOLOROWI słowa. Ignoruj sam tekst. R = {red}, G = {green}, B = {blue}. Naciśnij dowolny klawisz, aby kontynuować.",
+    "instructions": "Naciśnij klawisz odpowiadający KOLOROWI słowa. Ignoruj sam tekst. C = {red}, Z = {green}, N = {blue}. Naciśnij dowolny klawisz, aby kontynuować.",
     "start_button": "Start",
     "red": "CZERWONY",
     "green": "ZIELONY",
     "blue": "NIEBIESKI",
+    "r": "c",
+    "g": "z",
+    "b": "n",
     "results_title": "Wyniki",
     "back_main_menu": "Powrót do menu głównego",
     "accuracy_percent": "Dokładność: {percent:.1f}%",
     "avg_consistent_rt": "Średni czas reakcji zgodnych: {value:.3f} s",
-    "avg_inconsistent_rt": "Średni czas reakcji niezgodnych: {value:.3f} s"
+    "avg_inconsistent_rt": "Średni czas reakcji niezgodnych: {value:.3f} s",
+    "restart": "Uruchom ponownie Stroop test"
   },
   "dms": {
     "remember_pattern": "Zapamiętaj układ.",
