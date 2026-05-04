@@ -1,10 +1,20 @@
 import random
 import time
+import math
+from dataclasses import dataclass
 from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 from app.translations import get_translator
 from PyQt6.QtWidgets import QGraphicsOpacityEffect
 from PyQt6.QtCore import QPropertyAnimation
+
+
+@dataclass
+class StroopTrial:
+    trial: int
+    congruent: bool   # True = word colour matches (W-like), False = incongruent (CW-like)
+    correct: bool
+    rt: float
 
 
 class StroopScreen(QWidget):
@@ -18,18 +28,15 @@ class StroopScreen(QWidget):
         self.start_time = None
         self.consistent = None
 
-        self.consistent_rt_sum = 0
-        self.inconsistent_rt_sum = 0
         self._word_map = {
-            'red': self._tr.t('stroop.red'),
+            'red':   self._tr.t('stroop.red'),
             'green': self._tr.t('stroop.green'),
-            'blue': self._tr.t('stroop.blue'),
+            'blue':  self._tr.t('stroop.blue'),
         }
-
         self.colors = {
-            'red': self._tr.t('stroop.r'),
+            'red':   self._tr.t('stroop.r'),
             'green': self._tr.t('stroop.g'),
-            'blue': self._tr.t('stroop.b'),
+            'blue':  self._tr.t('stroop.b'),
         }
 
         self.setWindowTitle(self._tr.t('stroop.window_title'))
@@ -49,79 +56,118 @@ class StroopScreen(QWidget):
 
         self.trial = 0
         self.max_trials = 20
+        self.results = []          # list of StroopTrial
+        self.finish_callback = finish_callback
 
         self.next_trial()
-
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFocus()
 
-        self.results = []
-
-        self.finish_callback = finish_callback
-
     def next_trial(self):
         if self.trial >= self.max_trials:
-            accuracy, avg_crt, avg_icrt = self.compute_results()
-            self.finish_callback(accuracy, avg_crt, avg_icrt)
+            self.finish_callback(self.compute_summary())
             return
 
-        self.word = random.choice(list(self._word_map.keys()))
+        self.word  = random.choice(list(self._word_map.keys()))
         self.color = random.choice(list(self.colors.keys()))
-        self.consistent = self.word == self.color
+        self.consistent = (self.word == self.color)
 
         self.label.setText(self._word_map[self.word])
         self.label.setStyleSheet(f"color: {self.color}; font-size: 60px;")
-
         self.start_time = time.perf_counter()
         self.trial += 1
 
     def keyPressEvent(self, event):
-        key_map_en = {
-            Qt.Key.Key_R: 'r',
-            Qt.Key.Key_G: 'g',
-            Qt.Key.Key_B: 'b'
-        }
-        key_map_pl = {
-            Qt.Key.Key_C: 'r',
-            Qt.Key.Key_Z: 'g',
-            Qt.Key.Key_N: 'b'
-        }
-        if self._word_map['red'] == 'RED':
-            key_map = key_map_en
-        else:
-            key_map = key_map_pl
+        key_map_en = {Qt.Key.Key_R: 'r', Qt.Key.Key_G: 'g', Qt.Key.Key_B: 'b'}
+        key_map_pl = {Qt.Key.Key_C: 'r', Qt.Key.Key_Z: 'g', Qt.Key.Key_N: 'b'}
+        key_map = key_map_en if self._word_map['red'] == 'RED' else key_map_pl
 
         if event.key() in key_map:
+            rt = time.perf_counter() - self.start_time
             response = key_map[event.key()]
-            if self.consistent:
-                self.consistent_rt_sum += time.perf_counter() - self.start_time
-            else:
-                self.inconsistent_rt_sum += time.perf_counter() - self.start_time
-
             correct = (response == self.color[0])
-            self.results.append(correct)
+            self.results.append(StroopTrial(
+                trial=self.trial,
+                congruent=self.consistent,
+                correct=correct,
+                rt=rt
+            ))
             self.flash_fade()
-
             self.next_trial()
 
-    def compute_results(self):
-        total = len(self.results)
-        correct = sum(1 for r in self.results if r)
+    def compute_summary(self):
+        trials = self.results
+        total = len(trials)
+        if total == 0:
+            return {}
 
-        accuracy = (correct / total) * 100 if total > 0 else 0
+        cong  = [t for t in trials if t.congruent]
+        incong = [t for t in trials if not t.congruent]
 
-        avg_consistent_rt = self.consistent_rt_sum / total if total > 0 else 0
-        avg_inconsistent_rt = self.inconsistent_rt_sum / total if total > 0 else 0
+        def stats(group):
+            if not group: return 0.0, 0.0, 0.0, 0
+            rts = [t.rt for t in group]
+            acc = sum(1 for t in group if t.correct) / len(group) * 100
+            avg = sum(rts) / len(rts)
+            errors = sum(1 for t in group if not t.correct)
+            return acc, avg, errors, len(group)
 
-        return accuracy, avg_consistent_rt, avg_inconsistent_rt
+        acc_w,  avg_rt_w,  err_w,  n_w  = stats(cong)
+        acc_cw, avg_rt_cw, err_cw, n_cw = stats(incong)
+        acc_all = sum(1 for t in trials if t.correct) / total * 100
+
+        # Interference RT (Stroop effect in ms)
+        interference_rt = avg_rt_cw - avg_rt_w
+
+        # IG score — Golden (1978), adapted for accuracy-based version
+        # IG = acc_CW - (acc_W * acc_C) / (acc_W + acc_C)
+        # We use congruent as W proxy; no pure C condition in this version
+        ig = acc_cw - (acc_w * acc_cw) / (acc_w + acc_cw) if (acc_w + acc_cw) > 0 else 0.0
+
+        # Stroop effect % = relative RT slowdown
+        stroop_pct = (interference_rt / avg_rt_w * 100) if avg_rt_w > 0 else 0.0
+
+        # Error interference = extra errors in incongruent vs congruent (rate)
+        err_rate_w  = err_w  / n_w  * 100 if n_w  else 0.0
+        err_rate_cw = err_cw / n_cw * 100 if n_cw else 0.0
+        error_interference = err_rate_cw - err_rate_w
+
+        all_rts = [t.rt for t in trials]
+        avg_rt  = sum(all_rts) / total
+        sorted_rt = sorted(all_rts)
+        n = len(sorted_rt)
+        median_rt = sorted_rt[n//2] if n%2==1 else (sorted_rt[n//2-1]+sorted_rt[n//2])/2
+        variance = sum((r-avg_rt)**2 for r in all_rts)/total
+        std_rt = math.sqrt(variance)
+
+        return {
+            "total":            total,
+            "n_congruent":      n_w,
+            "n_incongruent":    n_cw,
+            "accuracy":         acc_all,
+            "acc_congruent":    acc_w,
+            "acc_incongruent":  acc_cw,
+            "avg_rt":           avg_rt,
+            "avg_rt_congruent": avg_rt_w,
+            "avg_rt_incongruent": avg_rt_cw,
+            "median_rt":        median_rt,
+            "std_rt":           std_rt,
+            "interference_rt":  interference_rt,
+            "stroop_effect_pct": stroop_pct,
+            "ig_score":         ig,
+            "error_interference": error_interference,
+            "err_rate_congruent":   err_rate_w,
+            "err_rate_incongruent": err_rate_cw,
+            "trials":           trials,
+        }
 
     def retranslate(self, lang=None):
         try:
             self.setWindowTitle(self._tr.t('stroop.window_title'))
             self._word_map = {
-                'red': self._tr.t('stroop.red'),
+                'red':   self._tr.t('stroop.red'),
                 'green': self._tr.t('stroop.green'),
-                'blue': self._tr.t('stroop.blue'),
+                'blue':  self._tr.t('stroop.blue'),
             }
             if self.word in self._word_map:
                 self.label.setText(self._word_map[self.word])
@@ -131,10 +177,7 @@ class StroopScreen(QWidget):
     def flash_fade(self):
         self.anim = QPropertyAnimation(self.opacity_effect, b"opacity")
         self.anim.setDuration(50)
-
         self.anim.setStartValue(1.0)
         self.anim.setKeyValueAt(0.5, 0.2)
         self.anim.setEndValue(1.0)
-
         self.anim.start()
-
