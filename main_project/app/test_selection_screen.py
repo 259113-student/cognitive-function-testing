@@ -6,6 +6,10 @@ from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 from app.translations import get_translator
 from app.helper import resource_path
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
+    QPushButton, QDialog, QComboBox, QSpinBox, QDialogButtonBox
+)
 
 class TestCard(QFrame):
     """A clickable card widget for displaying a test with an icon."""
@@ -112,6 +116,54 @@ class TestCard(QFrame):
         self.clicked.emit(self.test_id)
         super().mousePressEvent(event)
 
+class DoctorSettingsDialog(QDialog):
+    def __init__(self, current_dms_time_ms: int, parent=None):
+        super().__init__(parent)
+        self._tr = get_translator()
+        self.setWindowTitle(self._tr.t('doctor_panel.title'))
+        self.setMinimumWidth(380)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+
+        # Język
+        lang_row = QHBoxLayout()
+        self.language_label = QLabel(self._tr.t('language.label'))
+        self.language_combo = QComboBox()
+        self.language_combo.addItem(self._tr.t('language.polish'), 'pl')
+        self.language_combo.addItem(self._tr.t('language.english'), 'en')
+        self.language_combo.setCurrentIndex(0 if self._tr.language() == 'pl' else 1)
+        self.language_combo.currentIndexChanged.connect(self._on_language_changed)
+        lang_row.addWidget(self.language_label)
+        lang_row.addWidget(self.language_combo)
+        layout.addLayout(lang_row)
+
+        # Czas próbki DMS
+        dms_row = QHBoxLayout()
+        self.dms_label = QLabel(self._tr.t('dms.sample_duration'))
+        self.dms_spinbox = QSpinBox()
+        self.dms_spinbox.setRange(100, 5000)
+        self.dms_spinbox.setSingleStep(50)
+        self.dms_spinbox.setSuffix(" ms")
+        self.dms_spinbox.setValue(current_dms_time_ms)
+        dms_row.addWidget(self.dms_label)
+        dms_row.addWidget(self.dms_spinbox)
+        layout.addLayout(dms_row)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def _on_language_changed(self, idx):
+        lang = self.language_combo.itemData(idx)
+        if lang:
+            self._tr.set_language(lang)
+
+    def get_dms_time(self):
+        return self.dms_spinbox.value()
 
 class TestSelectionScreen(QWidget):
     testSelected = pyqtSignal(str)
@@ -119,6 +171,7 @@ class TestSelectionScreen(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._tr = get_translator()
+        self.dms_sample_time_ms = 800
         self._tr.languageChanged.connect(self.retranslate)
         self.init_ui()
 
@@ -127,6 +180,20 @@ class TestSelectionScreen(QWidget):
         main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.setContentsMargins(50, 30, 50, 50)
         main_layout.setSpacing(20)
+
+        top_bar = QHBoxLayout()
+        top_bar.addStretch()
+        self.settings_button = QPushButton("⚙")
+        self.settings_button.setFixedSize(40, 40)
+        self.settings_button.setFont(QFont("Arial", 18))
+        self.settings_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.settings_button.setStyleSheet("""
+            QPushButton { background-color: transparent; border: none; }
+            QPushButton:hover { background-color: #e0e0e0; border-radius: 20px; }
+        """)
+        self.settings_button.clicked.connect(self._open_doctor_settings)
+        top_bar.addWidget(self.settings_button)
+        main_layout.addLayout(top_bar)
 
         self.title_label = QLabel(self._tr.t('test_selection.title'))
         title_font = QFont()
@@ -194,6 +261,14 @@ class TestSelectionScreen(QWidget):
                 card.retranslate()
         except Exception:
             pass
+
+    def _open_doctor_settings(self):
+        dlg = DoctorSettingsDialog(self.dms_sample_time_ms, self)
+        if dlg.exec():
+            self.dms_sample_time_ms = dlg.get_dms_time()
+
+    def get_dms_sample_time_ms(self):
+        return self.dms_sample_time_ms
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

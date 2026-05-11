@@ -129,5 +129,20 @@
     "label": "Język",
     "english": "Angielski",
     "polish": "Polski"
+  },
+  "doctor_panel": {
+    "title": "Panel lekarza"
+  },
+  "practice": {
+    "banner": "Runda próbna",
+    "correct": "Dobrze!",
+    "wrong": "Niepoprawnie",
+    "complete_title": "Runda próbna zakończona",
+    "complete_message": "Świetnie! Jeśli rozumiesz zasady, możesz rozpocząć właściwy test. Możesz też powtórzyć rundę próbną.",
+    "repeat": "Powtórz rundę próbną",
+    "start_real": "Rozpocznij właściwy test",
+    "intro_title": "Runda próbna",
+    "intro_message": "Za chwilę rozpoczniesz rundę próbną. To kilka prób, które pozwolą Ci oswoić się z testem. Twoje odpowiedzi nie są zapisywane — po praktyce rozpocznie się właściwy test.",
+    "intro_button": "Rozumiem, rozpocznij rundę próbną"
   }
 }

@@ -129,5 +129,20 @@
     "label": "Language",
     "english": "English",
     "polish": "Polish"
+  },
+  "doctor_panel": {
+    "title": "Doctor's panel"
+  },
+  "practice": {
+    "banner": "Practice round",
+    "correct": "Correct!",
+    "wrong": "Wrong",
+    "complete_title": "Practice round complete",
+    "complete_message": "Great! If you understand the task, you can start the real test now. You can also repeat the practice if you'd like.",
+    "repeat": "Repeat practice",
+    "start_real": "Start the real test",
+    "intro_title": "Practice round",
+    "intro_message": "You're about to start a practice round. It's a few trials to help you get used to the test. Your answers won't be recorded — once practice is over, the real test will begin.",
+    "intro_button": "Got it, start practice"
   }
 }
