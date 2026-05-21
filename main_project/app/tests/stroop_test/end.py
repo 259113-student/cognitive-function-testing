@@ -23,7 +23,7 @@ C_FAINT  = "#f0ebe0"
 
 # Stroop-specific colours
 C_CONG   = "#5b8fd4"   # congruent  (blue — "easy")
-C_INCONG = "#e06058"   # incongruent (coral — "hard")
+C_INCONG = "#e09a30"   # incongruent (coral — "hard")
 C_INTER  = "#d95878"   # interference
 C_GOOD   = "#4dab83"   # correct
 C_WRONG  = "#e06058"   # wrong
@@ -202,17 +202,17 @@ class EndScreen(QWidget):
         lo = QVBoxLayout(w); lo.setContentsMargins(12,10,12,10); lo.setSpacing(4)
         lo.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         vl = QLabel(value); vl.setFont(QFont("Arial", 15, QFont.Weight.Bold))
-        vl.setStyleSheet(f"color:{color};background:transparent;")
+        vl.setStyleSheet(f"color:{color};background:transparent;border:none")
         vl.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         dl = QLabel(label); dl.setWordWrap(True)
-        dl.setStyleSheet(f"color:{C_MUTED};font-size:10px;background:transparent;")
+        dl.setStyleSheet(f"color:{C_MUTED};font-size:10px;background:transparent;border:none")
         dl.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         lo.addWidget(vl); lo.addWidget(dl)
         w.vl = vl; w.dl = dl; return w
 
     def _label(self, text, size=11, bold=False, color="#555555"):
         l = QLabel(text); l.setFont(QFont("Arial", size, QFont.Weight.Bold if bold else QFont.Weight.Normal))
-        l.setStyleSheet(f"color:{color};background:transparent;"); return l
+        l.setStyleSheet(f"color:{color};background:transparent;border:none"); return l
 
     def _divider(self):
         f = QFrame(); f.setFrameShape(QFrame.Shape.HLine)
@@ -237,7 +237,7 @@ class EndScreen(QWidget):
         self.title_lbl = QLabel(self._tr.t('stroop.results_title'))
         self.title_lbl.setFont(QFont("Arial", 22, QFont.Weight.Bold))
         self.title_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.title_lbl.setStyleSheet(f"color:{C_TEXT};background:transparent;")
+        self.title_lbl.setStyleSheet(f"color:{C_TEXT};background:transparent;border:none")
         lo.addWidget(self.title_lbl)
 
         # Hero: ring card left + stats card right (two separate cards)
@@ -296,8 +296,8 @@ class EndScreen(QWidget):
         self.lbl_rt_title = self._label(self._tr.t('stroop.section_rt_comparison'), 11, True, C_TEXT)
         rhdr.addWidget(self.lbl_rt_title); rhdr.addStretch()
         for col, key in [(C_CONG,'stroop.lbl_congruent'),(C_INCONG,'stroop.lbl_incongruent')]:
-            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;")
-            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;border:none")
+            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
             rhdr.addWidget(d); rhdr.addWidget(t); rhdr.addSpacing(10)
         rl.addLayout(rhdr)
         self.inter_bars = InterferenceBar(0, 0)
@@ -312,8 +312,8 @@ class EndScreen(QWidget):
         shdr.addWidget(self.lbl_spark_title); shdr.addStretch()
         self.spark_legends = []
         for col, key in [(C_CONG,'stroop.legend_cong'),(C_INCONG,'stroop.legend_incong'),(C_WRONG,'stroop.legend_wrong')]:
-            d = QLabel("—"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;font-weight:700;")
-            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+            d = QLabel("—"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;font-weight:700;border:none")
+            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
             self.spark_legends.append((t, key))
             shdr.addWidget(d); shdr.addWidget(t); shdr.addSpacing(10)
         sl.addLayout(shdr)
@@ -329,8 +329,8 @@ class EndScreen(QWidget):
         bhdr.addWidget(self.lbl_trials_title); bhdr.addStretch()
         self.trial_legends = []
         for col, key in [(C_CONG,'stroop.legend_cong'),(C_INCONG,'stroop.legend_incong'),(C_WRONG,'stroop.legend_wrong')]:
-            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:10px;")
-            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:10px;border:none")
+            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
             self.trial_legends.append((t, key))
             bhdr.addWidget(d); bhdr.addWidget(t); bhdr.addSpacing(10)
         bl.addLayout(bhdr)
@@ -345,7 +345,7 @@ class EndScreen(QWidget):
         self.lbl_export = self._label(self._tr.t('stroop.export_title'), 11, True, C_TEXT)
         exl.addWidget(self.lbl_export)
         self.exp_hint = QLabel(self._tr.t('stroop.export_hint'))
-        self.exp_hint.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+        self.exp_hint.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
         exl.addWidget(self.exp_hint)
         fmt_row = QHBoxLayout(); fmt_row.setSpacing(6)
         self.b_csv  = Chip("CSV","csv"); self.b_json = Chip("JSON","json")

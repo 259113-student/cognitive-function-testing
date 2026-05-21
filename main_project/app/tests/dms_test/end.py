@@ -8,10 +8,10 @@ from PyQt6.QtWidgets import (
     QFrame, QScrollArea, QButtonGroup, QFileDialog, QSizePolicy,
     QGraphicsDropShadowEffect
 )
-from PyQt6.QtGui import QFont, QColor, QPainter, QPen, QBrush, QFontMetrics
+from PyQt6.QtGui import QFont, QColor, QPainter, QPen, QBrush
 from PyQt6.QtCore import Qt, QRectF, QPropertyAnimation, QEasingCurve, pyqtProperty, QTimer, QPointF
 
-from main_project.app.translations import get_translator
+from app.translations import get_translator
 
 # ── Palette ────────────────────────────────────────
 C_BG      = "#f9f7f4"
@@ -231,10 +231,10 @@ class EndScreen(QWidget):
 
         vl = QLabel(value)
         vl.setFont(QFont("Arial", 18, QFont.Weight.Bold))
-        vl.setStyleSheet(f"color:{dot_color};background:transparent;")
+        vl.setStyleSheet(f"color:{dot_color};background:transparent;border:none")
 
         dl = QLabel(label)
-        dl.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+        dl.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
 
         lo.addWidget(vl); lo.addWidget(dl)
         w.vl = vl; w.dl = dl; w.dot = None
@@ -243,7 +243,7 @@ class EndScreen(QWidget):
     def _label(self, text, size=11, bold=False, color="#666666"):
         l = QLabel(text)
         l.setFont(QFont("Arial", size, QFont.Weight.Bold if bold else QFont.Weight.Normal))
-        l.setStyleSheet(f"color:{color};background:transparent;letter-spacing:0.5px;")
+        l.setStyleSheet(f"color:{color};background:transparent;letter-spacing:0.5px;border:none")
         return l
 
     def _divider(self):
@@ -276,7 +276,7 @@ class EndScreen(QWidget):
         self.title_lbl = QLabel(self._tr.t('dms.results_title'))
         self.title_lbl.setFont(QFont("Arial", 22, QFont.Weight.Bold))
         self.title_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.title_lbl.setStyleSheet(f"color:{C_TEXT};background:transparent;")
+        self.title_lbl.setStyleSheet(f"color:{C_TEXT};background:transparent;border:none")
         lo.addWidget(self.title_lbl)
 
         # ── Hero card: ring + stats ──────────────
@@ -333,8 +333,8 @@ class EndScreen(QWidget):
         shdr.addStretch()
         self.spark_legends = []
         for col, key in [(C_SAGE, 'dms.legend_correct'), (C_CORAL, 'dms.legend_wrong'), (C_SLATE, 'dms.legend_rt_line')]:
-            d = QLabel("—"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;font-weight:700;")
-            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+            d = QLabel("—"); d.setStyleSheet(f"color:{col};background:transparent;font-size:11px;font-weight:700;border:none")
+            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
             self.spark_legends.append((t, key))
             shdr.addWidget(d); shdr.addWidget(t); shdr.addSpacing(10)
         sl.addLayout(shdr)
@@ -351,8 +351,8 @@ class EndScreen(QWidget):
         bhdr.addStretch()
         self.trial_legends = []
         for col, key in [(C_SAGE, 'dms.legend_correct'), (C_CORAL, 'dms.legend_wrong')]:
-            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:10px;")
-            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+            d = QLabel("●"); d.setStyleSheet(f"color:{col};background:transparent;font-size:10px;border:none")
+            t = QLabel(self._tr.t(key)); t.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
             self.trial_legends.append((t, key))
             bhdr.addWidget(d); bhdr.addWidget(t); bhdr.addSpacing(10)
         bl.addLayout(bhdr)
@@ -368,7 +368,7 @@ class EndScreen(QWidget):
         self.lbl_export = self._label(self._tr.t('dms.export_title'), 11, True, C_TEXT)
         exl.addWidget(self.lbl_export)
         self.exp_hint = QLabel(self._tr.t('dms.export_hint'))
-        self.exp_hint.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;")
+        self.exp_hint.setStyleSheet(f"color:{C_MUTED};font-size:11px;background:transparent;border:none")
         exl.addWidget(self.exp_hint)
 
         fmt_row = QHBoxLayout(); fmt_row.setSpacing(6)
@@ -427,7 +427,7 @@ class EndScreen(QWidget):
         sign = "▲" if delta >= 0 else "▼"
         self.s_learn.vl.setText(f"{sign} {abs(delta):.0f}%")
         col = C_SAGE if delta >= 0 else C_CORAL
-        self.s_learn.vl.setStyleSheet(f"color:{col};background:transparent;font-size:15px;font-weight:700;")
+        self.s_learn.vl.setStyleSheet(f"color:{col};background:transparent;font-size:15px;font-weight:700;border:none")
 
         rts = [r.rt for r in s['results']]
         oks = [r.correct for r in s['results']]
