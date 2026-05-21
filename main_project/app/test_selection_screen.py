@@ -1,7 +1,5 @@
 import sys
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
-)
+
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 from app.translations import get_translator
@@ -10,6 +8,7 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
     QPushButton, QDialog, QComboBox, QSpinBox, QDialogButtonBox
 )
+from PyQt6.QtCore import QSettings
 
 class TestCard(QFrame):
     """A clickable card widget for displaying a test with an icon."""
@@ -117,11 +116,12 @@ class TestCard(QFrame):
         super().mousePressEvent(event)
 
 class DoctorSettingsDialog(QDialog):
-    def __init__(self, current_dms_time_ms: int, parent=None):
+    def __init__(self, settings, current_dms_time_ms: int, parent=None):
         super().__init__(parent)
         self._tr = get_translator()
         self.setWindowTitle(self._tr.t('doctor_panel.title'))
         self.setMinimumWidth(380)
+        self.settings = settings
 
         layout = QVBoxLayout(self)
         layout.setSpacing(15)
@@ -161,6 +161,7 @@ class DoctorSettingsDialog(QDialog):
         lang = self.language_combo.itemData(idx)
         if lang:
             self._tr.set_language(lang)
+            self.settings.setValue("language", lang)
 
     def get_dms_time(self):
         return self.dms_spinbox.value()
@@ -171,6 +172,11 @@ class TestSelectionScreen(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._tr = get_translator()
+
+        self.settings = QSettings("SIiCA", "CFT")
+        self.current_language = self.settings.value("language", "en")
+        self._tr.set_language(self.current_language)
+
         self.dms_sample_time_ms = 800
         self._tr.languageChanged.connect(self.retranslate)
         self.init_ui()
@@ -263,7 +269,7 @@ class TestSelectionScreen(QWidget):
             pass
 
     def _open_doctor_settings(self):
-        dlg = DoctorSettingsDialog(self.dms_sample_time_ms, self)
+        dlg = DoctorSettingsDialog(self.settings, self.dms_sample_time_ms, self)
         if dlg.exec():
             self.dms_sample_time_ms = dlg.get_dms_time()
 
