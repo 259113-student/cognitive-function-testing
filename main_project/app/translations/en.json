@@ -144,5 +144,11 @@
     "intro_title": "Practice round",
     "intro_message": "You're about to start a practice round. It's a few trials to help you get used to the test. Your answers won't be recorded — once practice is over, the real test will begin.",
     "intro_button": "Got it, start practice"
+  },
+  "post_test": {
+    "complete_title": "Test complete",
+    "complete_message": "Thank you for completing the test. Congratulations on doing a great job.",
+    "hand_over_message": "Please hand the computer back to the doctor now.",
+    "continue_results": "Go to test results"
   }
 }

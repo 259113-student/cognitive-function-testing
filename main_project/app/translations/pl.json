@@ -144,5 +144,11 @@
     "intro_title": "Runda próbna",
     "intro_message": "Za chwilę rozpoczniesz rundę próbną. To kilka prób, które pozwolą Ci oswoić się z testem. Twoje odpowiedzi nie są zapisywane — po praktyce rozpocznie się właściwy test.",
     "intro_button": "Rozumiem, rozpocznij rundę próbną"
+  },
+  "post_test": {
+    "complete_title": "Test zakończony",
+    "complete_message": "Dziękujemy za zakończenie testu. Gratulujemy świetnie wykonanej pracy.",
+    "hand_over_message": "Prosimy teraz o oddanie komputera lekarzowi.",
+    "continue_results": "Przejdź do wyników testu"
   }
 }
