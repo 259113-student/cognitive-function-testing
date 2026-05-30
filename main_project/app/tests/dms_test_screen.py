@@ -2,6 +2,7 @@ from app.tests.dms_test.dms import DMSTaskScreen
 from app.tests.dms_test.end import EndScreen
 from app.tests.practice_complete_screen import PracticeCompleteScreen
 from app.tests.post_test_screen import PostTestScreen
+from app.pin_security import verify_doctor_pin
 from app.tests.practice_intro_dialog import PracticeIntroDialog
 from app.tests.base_test_screen import BaseTestScreen
 from PyQt6.QtCore import pyqtSignal
@@ -63,6 +64,8 @@ class DmsTestScreen(BaseTestScreen):
 
     def _show_results(self):
         if getattr(self, '_pending_summary', None) is None:
+            return
+        if not verify_doctor_pin(self):
             return
         self.end_screen.set_results(self._pending_summary)
         self.setCurrentWidget(self.end_screen)

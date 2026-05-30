@@ -131,7 +131,23 @@
     "polish": "Polski"
   },
   "doctor_panel": {
-    "title": "Panel lekarza"
+    "title": "Panel lekarza",
+    "shortcut_hint": "Ukryty skrót: Ctrl+Shift+L",
+    "pin_section_title": "PIN lekarza",
+    "pin_hint": "Aby ustawić lub zmienić PIN, wpisz nowy PIN poniżej. Jeśli PIN już istnieje, podaj najpierw aktualny PIN.",
+    "current_pin": "Aktualny PIN",
+    "new_pin": "Nowy PIN",
+    "confirm_pin": "Powtórz PIN",
+    "pin_placeholder": "Wpisz PIN",
+    "pin_too_short": "PIN musi mieć co najmniej 4 znaki.",
+    "pin_mismatch": "Nowy PIN i powtórzony PIN nie są takie same.",
+    "current_pin_invalid": "Aktualny PIN jest niepoprawny.",
+    "verify_title": "Weryfikacja lekarza",
+    "verify_prompt": "Podaj PIN lekarza, aby wyświetlić wyniki.",
+    "pin_missing_title": "Brak skonfigurowanego PIN-u",
+    "pin_missing_message": "PIN lekarza nie został jeszcze ustawiony. Ustaw go na ekranie startowym skrótem Ctrl+Shift+L.",
+    "pin_invalid_title": "Błędny PIN",
+    "pin_invalid_message": "Wprowadzony PIN jest niepoprawny."
   },
   "practice": {
     "banner": "Runda próbna",

@@ -131,7 +131,23 @@
     "polish": "Polish"
   },
   "doctor_panel": {
-    "title": "Doctor's panel"
+    "title": "Doctor's panel",
+    "shortcut_hint": "Hidden shortcut: Ctrl+Shift+L",
+    "pin_section_title": "Doctor PIN",
+    "pin_hint": "To set or change the PIN, enter the new PIN below. If a PIN already exists, enter the current PIN first.",
+    "current_pin": "Current PIN",
+    "new_pin": "New PIN",
+    "confirm_pin": "Confirm PIN",
+    "pin_placeholder": "Enter PIN",
+    "pin_too_short": "PIN must be at least 4 characters long.",
+    "pin_mismatch": "New PIN and confirmation PIN do not match.",
+    "current_pin_invalid": "Current PIN is invalid.",
+    "verify_title": "Doctor verification",
+    "verify_prompt": "Enter doctor PIN to view test results.",
+    "pin_missing_title": "PIN not configured",
+    "pin_missing_message": "Doctor PIN has not been set yet. Set it on the start screen with Ctrl+Shift+L.",
+    "pin_invalid_title": "Invalid PIN",
+    "pin_invalid_message": "The entered PIN is invalid."
   },
   "practice": {
     "banner": "Practice round",
