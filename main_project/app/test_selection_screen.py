@@ -1,13 +1,13 @@
 import sys
 
-from PyQt6.QtGui import QFont, QPixmap, QShortcut, QKeySequence
+from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 from app.translations import get_translator
 from app.helper import resource_path
-from app.pin_security import DoctorPinService
+from app.pin_security import DoctorPinService, verify_doctor_pin
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
-    QPushButton, QDialog, QComboBox, QSpinBox, QDialogButtonBox, QLineEdit, QMessageBox
+    QPushButton, QDialog, QComboBox, QSpinBox, QDialogButtonBox, QLineEdit, QMessageBox, QGridLayout
 )
 from PyQt6.QtCore import QSettings
 
@@ -120,6 +120,7 @@ class DoctorSettingsDialog(QDialog):
     def __init__(self, settings, current_dms_time_ms: int, parent=None):
         super().__init__(parent)
         self._tr = get_translator()
+        self.pin_service = DoctorPinService()
         self.setWindowTitle(self._tr.t('doctor_panel.title'))
         self.setMinimumWidth(380)
         self.settings = settings
@@ -136,6 +137,8 @@ class DoctorSettingsDialog(QDialog):
         self.language_combo.setCurrentIndex(0 if self._tr.language() == 'pl' else 1)
         self.language_combo.currentIndexChanged.connect(self._on_language_changed)
         lang_row.addWidget(self.language_label)
+        lang_row.addStretch(1)
+        self.language_combo.setMinimumWidth(160)
         lang_row.addWidget(self.language_combo)
         layout.addLayout(lang_row)
 
@@ -148,13 +151,65 @@ class DoctorSettingsDialog(QDialog):
         self.dms_spinbox.setSuffix(" ms")
         self.dms_spinbox.setValue(current_dms_time_ms)
         dms_row.addWidget(self.dms_label)
+        dms_row.addStretch(1)
+        self.dms_spinbox.setMinimumWidth(160)
         dms_row.addWidget(self.dms_spinbox)
         layout.addLayout(dms_row)
+
+        self.pin_title_label = QLabel(self._tr.t('doctor_panel.pin_section_title'))
+        self.pin_title_label.setFont(QFont("Arial", 11, QFont.Weight.Bold))
+        layout.addWidget(self.pin_title_label)
+
+        self.pin_hint_label = QLabel(self._tr.t('doctor_panel.pin_hint'))
+        self.pin_hint_label.setWordWrap(True)
+        self.pin_hint_label.setStyleSheet("color: #666;")
+        layout.addWidget(self.pin_hint_label)
+
+        pin_grid = QGridLayout()
+        pin_grid.setContentsMargins(0, 0, 0, 0)
+        pin_grid.setHorizontalSpacing(10)
+        pin_grid.setVerticalSpacing(10)
+        pin_grid.setColumnStretch(0, 1)
+        pin_grid.setColumnStretch(1, 0)
+
+        self.current_pin_edit = None
+        row_index = 0
+        if self.pin_service.has_pin():
+            self.current_pin_label = QLabel(self._tr.t('doctor_panel.current_pin'))
+            self.current_pin_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+            self.current_pin_edit = QLineEdit()
+            self.current_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
+            self.current_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
+            self.current_pin_edit.setMinimumWidth(160)
+            pin_grid.addWidget(self.current_pin_label, row_index, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+            pin_grid.addWidget(self.current_pin_edit, row_index, 1, alignment=Qt.AlignmentFlag.AlignRight)
+            row_index += 1
+
+        self.new_pin_label = QLabel(self._tr.t('doctor_panel.new_pin'))
+        self.new_pin_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+        self.new_pin_edit = QLineEdit()
+        self.new_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.new_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
+        self.new_pin_edit.setMinimumWidth(160)
+        pin_grid.addWidget(self.new_pin_label, row_index, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        pin_grid.addWidget(self.new_pin_edit, row_index, 1, alignment=Qt.AlignmentFlag.AlignRight)
+        row_index += 1
+
+        self.confirm_pin_label = QLabel(self._tr.t('doctor_panel.confirm_pin'))
+        self.confirm_pin_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+        self.confirm_pin_edit = QLineEdit()
+        self.confirm_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.confirm_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
+        self.confirm_pin_edit.setMinimumWidth(160)
+        pin_grid.addWidget(self.confirm_pin_label, row_index, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        pin_grid.addWidget(self.confirm_pin_edit, row_index, 1, alignment=Qt.AlignmentFlag.AlignRight)
+
+        layout.addLayout(pin_grid)
 
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
-        buttons.accepted.connect(self.accept)
+        buttons.accepted.connect(self._on_accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
@@ -166,60 +221,6 @@ class DoctorSettingsDialog(QDialog):
 
     def get_dms_time(self):
         return self.dms_spinbox.value()
-
-
-class DoctorPinSettingsDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._tr = get_translator()
-        self.pin_service = DoctorPinService()
-
-        self.setWindowTitle(self._tr.t('doctor_panel.pin_section_title'))
-        self.setMinimumWidth(380)
-
-        layout = QVBoxLayout(self)
-        layout.setSpacing(15)
-
-        self.pin_hint_label = QLabel(self._tr.t('doctor_panel.pin_hint'))
-        self.pin_hint_label.setWordWrap(True)
-        self.pin_hint_label.setStyleSheet("color: #666;")
-        layout.addWidget(self.pin_hint_label)
-
-        self.current_pin_edit = None
-        if self.pin_service.has_pin():
-            current_row = QHBoxLayout()
-            self.current_pin_label = QLabel(self._tr.t('doctor_panel.current_pin'))
-            self.current_pin_edit = QLineEdit()
-            self.current_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
-            self.current_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
-            current_row.addWidget(self.current_pin_label)
-            current_row.addWidget(self.current_pin_edit)
-            layout.addLayout(current_row)
-
-        new_row = QHBoxLayout()
-        self.new_pin_label = QLabel(self._tr.t('doctor_panel.new_pin'))
-        self.new_pin_edit = QLineEdit()
-        self.new_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.new_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
-        new_row.addWidget(self.new_pin_label)
-        new_row.addWidget(self.new_pin_edit)
-        layout.addLayout(new_row)
-
-        confirm_row = QHBoxLayout()
-        self.confirm_pin_label = QLabel(self._tr.t('doctor_panel.confirm_pin'))
-        self.confirm_pin_edit = QLineEdit()
-        self.confirm_pin_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.confirm_pin_edit.setPlaceholderText(self._tr.t('doctor_panel.pin_placeholder'))
-        confirm_row.addWidget(self.confirm_pin_label)
-        confirm_row.addWidget(self.confirm_pin_edit)
-        layout.addLayout(confirm_row)
-
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
-        )
-        buttons.accepted.connect(self._on_accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
 
     def _on_accept(self):
         new_pin = self.new_pin_edit.text().strip()
@@ -241,7 +242,13 @@ class DoctorPinSettingsDialog(QDialog):
                     return
 
             self.pin_service.set_pin(new_pin)
+            QMessageBox.information(
+                self,
+                self._tr.t('doctor_panel.pin_changed_title'),
+                self._tr.t('doctor_panel.pin_changed_message'),
+            )
 
+        self.settings.setValue("language", self.language_combo.itemData(self.language_combo.currentIndex()))
         self.accept()
 
 class TestSelectionScreen(QWidget):
@@ -258,9 +265,6 @@ class TestSelectionScreen(QWidget):
         self.dms_sample_time_ms = 800
         self._tr.languageChanged.connect(self.retranslate)
         self.init_ui()
-        self._doctor_shortcut = QShortcut(QKeySequence("Ctrl+Shift+L"), self)
-        self._doctor_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
-        self._doctor_shortcut.activated.connect(self._open_doctor_pin_settings)
 
     def init_ui(self):
         main_layout = QVBoxLayout(self)
@@ -351,13 +355,11 @@ class TestSelectionScreen(QWidget):
             pass
 
     def _open_doctor_settings(self):
+        if not verify_doctor_pin(self):
+            return
         dlg = DoctorSettingsDialog(self.settings, self.dms_sample_time_ms, self)
         if dlg.exec():
             self.dms_sample_time_ms = dlg.get_dms_time()
-
-    def _open_doctor_pin_settings(self):
-        dlg = DoctorPinSettingsDialog(self)
-        dlg.exec()
 
     def get_dms_sample_time_ms(self):
         return self.dms_sample_time_ms
