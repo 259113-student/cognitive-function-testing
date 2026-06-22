@@ -60,7 +60,7 @@
     "lbl_rt_cong": "Czas reakcji - zgodny",
     "lbl_rt_incong": "Czas reakcji - niezgodny",
     "section_interference": "Metryki interferencji",
-    "lbl_inter_rt": "Czas reakcji interferencji",
+    "lbl_inter_rt": "Różnica w czasie reakcji",
     "lbl_stroop_pct": "Efekt Stroopa",
     "lbl_ig": "Wynik IG",
     "lbl_err_inter": "Interf. błędów",

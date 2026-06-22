@@ -375,9 +375,9 @@ class EndScreen(QWidget):
         self.b_csv  = Chip("CSV",  "csv")
         self.b_json = Chip("JSON", "json")
         self.b_txt  = Chip("TXT",  "txt")
-        self.b_pdf  = Chip("PDF",  "pdf")
+        # self.b_pdf  = Chip("PDF",  "pdf")  # does not work
         self.b_csv.setChecked(True)
-        for b in (self.b_csv, self.b_json, self.b_txt, self.b_pdf):
+        for b in (self.b_csv, self.b_json, self.b_txt):
             self._grp.addButton(b); fmt_row.addWidget(b)
         fmt_row.addStretch()
 

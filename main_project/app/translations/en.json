@@ -60,7 +60,7 @@
     "lbl_rt_cong": "Cong. Avg RT",
     "lbl_rt_incong": "Incong. Avg RT",
     "section_interference": "Interference Metrics",
-    "lbl_inter_rt": "Interference RT",
+    "lbl_inter_rt": "Interference RT difference",
     "lbl_stroop_pct": "Stroop Effect",
     "lbl_ig": "IG Score",
     "lbl_err_inter": "Error Interference",

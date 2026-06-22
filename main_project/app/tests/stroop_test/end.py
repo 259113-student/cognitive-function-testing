@@ -197,7 +197,7 @@ class EndScreen(QWidget):
         f.setGraphicsEffect(_shadow()); return f
 
     def _mini_stat(self, value, label, color):
-        w = QWidget(); w.setStyleSheet("background:transparent;")
+        w = QWidget(); w.setStyleSheet("background:transparent;border:none")
         w.setMinimumSize(100, 64)
         lo = QVBoxLayout(w); lo.setContentsMargins(12,10,12,10); lo.setSpacing(4)
         lo.setAlignment(Qt.AlignmentFlag.AlignVCenter)
@@ -349,9 +349,10 @@ class EndScreen(QWidget):
         exl.addWidget(self.exp_hint)
         fmt_row = QHBoxLayout(); fmt_row.setSpacing(6)
         self.b_csv  = Chip("CSV","csv"); self.b_json = Chip("JSON","json")
-        self.b_txt  = Chip("TXT","txt"); self.b_pdf  = Chip("PDF","pdf")
+        self.b_txt  = Chip("TXT","txt")
+        # self.b_pdf  = Chip("PDF","pdf")  # does not work
         self.b_csv.setChecked(True)
-        for b in (self.b_csv,self.b_json,self.b_txt,self.b_pdf):
+        for b in (self.b_csv,self.b_json,self.b_txt):
             self._grp.addButton(b); fmt_row.addWidget(b)
         fmt_row.addStretch()
         self.save_btn = QPushButton(self._tr.t('stroop.save_report'))
